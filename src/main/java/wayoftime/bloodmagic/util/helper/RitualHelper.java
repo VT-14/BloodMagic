@@ -32,8 +32,7 @@ public class RitualHelper
 
 	public static boolean canCrystalActivate(Ritual ritual, int crystalLevel)
 	{
-		return ritual.getCrystalLevel() <= crystalLevel
-				&& BloodMagic.RITUAL_MANAGER.enabled(BloodMagic.RITUAL_MANAGER.getId(ritual), false);
+		return ritual.getCrystalLevel() <= crystalLevel && BloodMagic.RITUAL_MANAGER.enabled(BloodMagic.RITUAL_MANAGER.getId(ritual), false);
 	}
 
 	/**
@@ -249,5 +248,50 @@ public class RitualHelper
 
 			}
 		return Pair.of(possibleRitual, possibleDirection);
+	}
+
+	/**
+	 * Counts the number of Runes and returns them as an Integer Array.
+	 * 
+	 * @param ritual - The current ritual
+	 * @return An Integer array. 0 = Blank, 1 = Air, 2 = Earth, 3 = Fire, 4 = Water,
+	 *         5 = Dusk, 6 = Dawn, and 7 = Total Count.
+	 */
+	public static int[] getRuneCounts(Ritual ritual)
+	{
+		int counts[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+		List<RitualComponent> components = Lists.newArrayList();
+		ritual.gatherComponents(components::add);
+
+		counts[7] = components.size();
+
+		for (RitualComponent component : components)
+		{
+			switch (component.getRuneType())
+			{
+			case BLANK:
+				counts[0]++;
+				break;
+			case AIR:
+				counts[1]++;
+				break;
+			case EARTH:
+				counts[2]++;
+				break;
+			case FIRE:
+				counts[3]++;
+				break;
+			case WATER:
+				counts[4]++;
+				break;
+			case DUSK:
+				counts[5]++;
+				break;
+			case DAWN:
+				counts[6]++;
+				break;
+			}
+		}
+		return counts;
 	}
 }

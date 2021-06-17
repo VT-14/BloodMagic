@@ -34,6 +34,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import wayoftime.bloodmagic.BloodMagic;
+import wayoftime.bloodmagic.api.compat.EnumDemonWillType;
 import wayoftime.bloodmagic.common.block.BlockRitualStone;
 import wayoftime.bloodmagic.common.block.BloodMagicBlocks;
 import wayoftime.bloodmagic.ritual.EnumRuneType;
@@ -45,14 +46,12 @@ import wayoftime.bloodmagic.util.Utils;
 import wayoftime.bloodmagic.util.handler.event.ClientHandler;
 import wayoftime.bloodmagic.util.helper.RitualHelper;
 import wayoftime.bloodmagic.util.helper.TextHelper;
-import wayoftime.bloodmagic.api.compat.EnumDemonWillType;
 
 public class ItemRitualDiviner extends Item
 {
 	final int type;
 	public static final String tooltipBase = "tooltip.bloodmagic.diviner.";
-	public static String[] names =
-	{ "normal", "dusk", "dawn" };
+	public static String[] names = { "normal", "dusk", "dawn" };
 
 	public ItemRitualDiviner(int type)
 	{
@@ -250,63 +249,26 @@ public class ItemRitualDiviner extends Item
 			{
 				tooltip.add(new TranslationTextComponent(tooltipBase + "currentDirection", Utils.toFancyCasing(getDirection(stack).name())));
 				tooltip.add(new StringTextComponent(""));
-				List<RitualComponent> components = Lists.newArrayList();
-				ritual.gatherComponents(components::add);
 
-				int blankRunes = 0;
-				int airRunes = 0;
-				int waterRunes = 0;
-				int fireRunes = 0;
-				int earthRunes = 0;
-				int duskRunes = 0;
-				int dawnRunes = 0;
-				int totalRunes = components.size();
+				int counts[] = RitualHelper.getRuneCounts(ritual); // blank, air, water, fire, earth, dusk, dawn, total
 
-				for (RitualComponent component : components)
-				{
-					switch (component.getRuneType())
-					{
-					case BLANK:
-						blankRunes++;
-						break;
-					case AIR:
-						airRunes++;
-						break;
-					case EARTH:
-						earthRunes++;
-						break;
-					case FIRE:
-						fireRunes++;
-						break;
-					case WATER:
-						waterRunes++;
-						break;
-					case DUSK:
-						duskRunes++;
-						break;
-					case DAWN:
-						dawnRunes++;
-						break;
-					}
-				}
-
-				if (blankRunes > 0)
-					tooltip.add(new TranslationTextComponent(tooltipBase + "blankRune", blankRunes).mergeStyle(EnumRuneType.BLANK.colorCode));
-				if (waterRunes > 0)
-					tooltip.add(new TranslationTextComponent(tooltipBase + "waterRune", waterRunes).mergeStyle(EnumRuneType.WATER.colorCode));
-				if (airRunes > 0)
-					tooltip.add(new TranslationTextComponent(tooltipBase + "airRune", airRunes).mergeStyle(EnumRuneType.AIR.colorCode));
-				if (fireRunes > 0)
-					tooltip.add(new TranslationTextComponent(tooltipBase + "fireRune", fireRunes).mergeStyle(EnumRuneType.FIRE.colorCode));
-				if (earthRunes > 0)
-					tooltip.add(new TranslationTextComponent(tooltipBase + "earthRune", earthRunes).mergeStyle(EnumRuneType.EARTH.colorCode));
-				if (duskRunes > 0)
-					tooltip.add(new TranslationTextComponent(tooltipBase + "duskRune", duskRunes).mergeStyle(EnumRuneType.DUSK.colorCode));
-				if (dawnRunes > 0)
-					tooltip.add(new TranslationTextComponent(tooltipBase + "dawnRune", dawnRunes).mergeStyle(EnumRuneType.DAWN.colorCode));
+				if (counts[0] > 0)
+					tooltip.add(new TranslationTextComponent(tooltipBase + "blankRune", counts[0]).mergeStyle(EnumRuneType.BLANK.colorCode));
+				if (counts[1] > 0)
+					tooltip.add(new TranslationTextComponent(tooltipBase + "waterRune", counts[1]).mergeStyle(EnumRuneType.WATER.colorCode));
+				if (counts[2] > 0)
+					tooltip.add(new TranslationTextComponent(tooltipBase + "airRune", counts[2]).mergeStyle(EnumRuneType.AIR.colorCode));
+				if (counts[3] > 0)
+					tooltip.add(new TranslationTextComponent(tooltipBase + "fireRune", counts[3]).mergeStyle(EnumRuneType.FIRE.colorCode));
+				if (counts[4] > 0)
+					tooltip.add(new TranslationTextComponent(tooltipBase + "earthRune", counts[4]).mergeStyle(EnumRuneType.EARTH.colorCode));
+				if (counts[5] > 0)
+					tooltip.add(new TranslationTextComponent(tooltipBase + "duskRune", counts[5]).mergeStyle(EnumRuneType.DUSK.colorCode));
+				if (counts[6] > 0)
+					tooltip.add(new TranslationTextComponent(tooltipBase + "dawnRune", counts[6]).mergeStyle(EnumRuneType.DAWN.colorCode));
 
 				tooltip.add(new StringTextComponent(""));
-				tooltip.add(new TranslationTextComponent(tooltipBase + "totalRune", totalRunes));
+				tooltip.add(new TranslationTextComponent(tooltipBase + "totalRune", counts[7]));
 			} else
 			{
 				tooltip.add(new StringTextComponent(""));
@@ -576,10 +538,7 @@ public class ItemRitualDiviner extends Item
 				double d0 = random.nextGaussian() * 0.02D;
 				double d1 = random.nextGaussian() * 0.02D;
 				double d2 = random.nextGaussian() * 0.02D;
-				worldIn.addParticle(ParticleTypes.HAPPY_VILLAGER, (double) ((float) pos.getX()
-						+ random.nextFloat()), (double) pos.getY()
-								+ (double) random.nextFloat(), (double) ((float) pos.getZ()
-										+ random.nextFloat()), d0, d1, d2);
+				worldIn.addParticle(ParticleTypes.HAPPY_VILLAGER, (double) ((float) pos.getX() + random.nextFloat()), (double) pos.getY() + (double) random.nextFloat(), (double) ((float) pos.getZ() + random.nextFloat()), d0, d1, d2);
 			}
 		} else
 		{
@@ -588,10 +547,7 @@ public class ItemRitualDiviner extends Item
 				double d0 = random.nextGaussian() * 0.02D;
 				double d1 = random.nextGaussian() * 0.02D;
 				double d2 = random.nextGaussian() * 0.02D;
-				worldIn.addParticle(ParticleTypes.HAPPY_VILLAGER, (double) ((float) pos.getX()
-						+ random.nextFloat()), (double) pos.getY()
-								+ (double) random.nextFloat()
-										* 1.0f, (double) ((float) pos.getZ() + random.nextFloat()), d0, d1, d2);
+				worldIn.addParticle(ParticleTypes.HAPPY_VILLAGER, (double) ((float) pos.getX() + random.nextFloat()), (double) pos.getY() + (double) random.nextFloat() * 1.0f, (double) ((float) pos.getZ() + random.nextFloat()), d0, d1, d2);
 			}
 		}
 	}

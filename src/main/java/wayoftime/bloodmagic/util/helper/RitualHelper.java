@@ -1,6 +1,8 @@
 package wayoftime.bloodmagic.util.helper;
 
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -10,6 +12,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
@@ -251,47 +254,61 @@ public class RitualHelper
 	}
 
 	/**
-	 * Counts the number of Runes and returns them as an Integer Array.
+	 * Counts the number of each type of Ritual Stone.
 	 * 
-	 * @param ritual - The current ritual
-	 * @return An Integer array. 0 = Blank, 1 = Air, 2 = Earth, 3 = Fire, 4 = Water,
-	 *         5 = Dusk, 6 = Dawn, and 7 = Total Count.
+	 * @param ritual - ritual ID to count.
+	 * @return Tuple(A, B). A = Total number of Ritual Stones. B = a Map of
+	 *         EnumRuneType with that type's count.
 	 */
-	public static int[] getRuneCounts(Ritual ritual)
+	public static Tuple<Integer, Map<EnumRuneType, Integer>> countRunes(Ritual ritual)
 	{
-		int counts[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+		Map<EnumRuneType, Integer> runeMap = new EnumMap<>(EnumRuneType.class);
 		List<RitualComponent> components = Lists.newArrayList();
 		ritual.gatherComponents(components::add);
-
-		counts[7] = components.size();
+		int blankRunes = 0;
+		int waterRunes = 0;
+		int earthRunes = 0;
+		int fireRunes = 0;
+		int airRunes = 0;
+		int duskRunes = 0;
+		int dawnRunes = 0;
+		int totalRunes = components.size();
 
 		for (RitualComponent component : components)
 		{
 			switch (component.getRuneType())
 			{
 			case BLANK:
-				counts[0]++;
-				break;
-			case AIR:
-				counts[1]++;
-				break;
-			case EARTH:
-				counts[2]++;
-				break;
-			case FIRE:
-				counts[3]++;
+				blankRunes++;
 				break;
 			case WATER:
-				counts[4]++;
+				waterRunes++;
+				break;
+			case EARTH:
+				earthRunes++;
+				break;
+			case FIRE:
+				fireRunes++;
+				break;
+			case AIR:
+				airRunes++;
 				break;
 			case DUSK:
-				counts[5]++;
+				duskRunes++;
 				break;
 			case DAWN:
-				counts[6]++;
+				dawnRunes++;
 				break;
 			}
 		}
-		return counts;
+		runeMap.put(EnumRuneType.BLANK, blankRunes);
+		runeMap.put(EnumRuneType.WATER, waterRunes);
+		runeMap.put(EnumRuneType.EARTH, earthRunes);
+		runeMap.put(EnumRuneType.FIRE, fireRunes);
+		runeMap.put(EnumRuneType.AIR, airRunes);
+		runeMap.put(EnumRuneType.DUSK, duskRunes);
+		runeMap.put(EnumRuneType.DAWN, dawnRunes);
+
+		return new Tuple<Integer, Map<EnumRuneType, Integer>>(totalRunes, runeMap);
 	}
 }

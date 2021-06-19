@@ -1,12 +1,16 @@
 package wayoftime.bloodmagic.compat.patchouli.processors;
 
+import java.util.Map;
+
 import org.apache.logging.log4j.LogManager;
 
+import net.minecraft.util.Tuple;
 import vazkii.patchouli.api.IComponentProcessor;
 import vazkii.patchouli.api.IVariable;
 import vazkii.patchouli.api.IVariableProvider;
 import wayoftime.bloodmagic.BloodMagic;
 import wayoftime.bloodmagic.common.item.ItemRitualDiviner;
+import wayoftime.bloodmagic.ritual.EnumRuneType;
 import wayoftime.bloodmagic.ritual.Ritual;
 import wayoftime.bloodmagic.util.helper.RitualHelper;
 import wayoftime.bloodmagic.util.helper.TextHelper;
@@ -36,21 +40,22 @@ public class RitualInfoProcessor implements IComponentProcessor
 		if (key.equals("auto_text"))
 		{
 			final String TEXT_BASE = ItemRitualDiviner.tooltipBase; // Use the Ritual Diviner's text.
-			int counts[] = RitualHelper.getRuneCounts(ritual); // blank, air, water, fire, earth, dusk, dawn, total
+
 			String output = TextHelper.localize(ritual.getTranslationKey() + ".info") + "$(br2)";
 
-			for (enumRuneTextFormatter rune : enumRuneTextFormatter.values())
+			Tuple<Integer, Map<EnumRuneType, Integer>> runeCount = RitualHelper.countRunes(ritual);
+			int totalRunes = runeCount.getA();
+			Map<EnumRuneType, Integer> runeMap = runeCount.getB();
+			for (EnumRuneType type : EnumRuneType.values())
 			{
-				if (counts[rune.i] > 0)
+				int count = runeMap.get(type);
+				if (count > 0)
 				{
-					output += rune.colorCode + TextHelper.localize(TEXT_BASE + rune.runeType, counts[rune.i]) + "$()$(br)";
+					output += type.patchouliColor + TextHelper.localize(TEXT_BASE + type.translationKey, count) + "$()$(br)";
 				}
 			}
 
-			output += "$(br2)" + TextHelper.localize(TEXT_BASE + "totalRune", counts[7]) + "$(br)";
-			// In Patchouli, "$(br)$(br)" apparently does not make a double line break, so
-			// we start this with a double line break.
-
+			output += "$(br2)" + TextHelper.localize(TEXT_BASE + "totalRune", totalRunes) + "$(br)";
 			switch (ritual.getCrystalLevel())
 			{
 			case 0:
@@ -71,27 +76,5 @@ public class RitualInfoProcessor implements IComponentProcessor
 			return IVariable.wrap(output);
 		}
 		return null;
-	}
-
-	private enum enumRuneTextFormatter
-	{
-		BLANK(0, "$(blank)", "blankRune"),
-		AIR(1, "$(air)", "airRune"),
-		WATER(2, "$(water)", "waterRune"),
-		FIRE(3, "$(fire)", "fireRune"),
-		EARTH(4, "$(earth)", "earthRune"),
-		DUSK(5, "$(dusk)", "duskRune"),
-		DAWN(6, "$(dawn)", "dawnRune");
-
-		private final int i; // index value from RitualHelper.getRuneCounts array.
-		private final String colorCode; // Patchouli color codes (set in Book.json)
-		private final String runeType; // rune's suffix for translation.
-
-		enumRuneTextFormatter(int i, String colorCode, String runeType)
-		{
-			this.i = i;
-			this.colorCode = colorCode;
-			this.runeType = runeType;
-		}
 	}
 }

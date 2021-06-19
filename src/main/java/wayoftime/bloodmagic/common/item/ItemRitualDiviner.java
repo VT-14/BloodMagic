@@ -2,6 +2,7 @@ package wayoftime.bloodmagic.common.item;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import com.google.common.collect.Lists;
 
@@ -23,6 +24,7 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.RayTraceResult;
@@ -250,25 +252,19 @@ public class ItemRitualDiviner extends Item
 				tooltip.add(new TranslationTextComponent(tooltipBase + "currentDirection", Utils.toFancyCasing(getDirection(stack).name())));
 				tooltip.add(new StringTextComponent(""));
 
-				int counts[] = RitualHelper.getRuneCounts(ritual); // blank, air, water, fire, earth, dusk, dawn, total
-
-				if (counts[0] > 0)
-					tooltip.add(new TranslationTextComponent(tooltipBase + "blankRune", counts[0]).mergeStyle(EnumRuneType.BLANK.colorCode));
-				if (counts[1] > 0)
-					tooltip.add(new TranslationTextComponent(tooltipBase + "waterRune", counts[1]).mergeStyle(EnumRuneType.WATER.colorCode));
-				if (counts[2] > 0)
-					tooltip.add(new TranslationTextComponent(tooltipBase + "airRune", counts[2]).mergeStyle(EnumRuneType.AIR.colorCode));
-				if (counts[3] > 0)
-					tooltip.add(new TranslationTextComponent(tooltipBase + "fireRune", counts[3]).mergeStyle(EnumRuneType.FIRE.colorCode));
-				if (counts[4] > 0)
-					tooltip.add(new TranslationTextComponent(tooltipBase + "earthRune", counts[4]).mergeStyle(EnumRuneType.EARTH.colorCode));
-				if (counts[5] > 0)
-					tooltip.add(new TranslationTextComponent(tooltipBase + "duskRune", counts[5]).mergeStyle(EnumRuneType.DUSK.colorCode));
-				if (counts[6] > 0)
-					tooltip.add(new TranslationTextComponent(tooltipBase + "dawnRune", counts[6]).mergeStyle(EnumRuneType.DAWN.colorCode));
-
+				Tuple<Integer, Map<EnumRuneType, Integer>> runeCount = RitualHelper.countRunes(ritual);
+				int totalRunes = runeCount.getA();
+				Map<EnumRuneType, Integer> runeMap = runeCount.getB();
+				for (EnumRuneType type : EnumRuneType.values())
+				{
+					int count = runeMap.get(type);
+					if (count > 0)
+					{
+						tooltip.add(new TranslationTextComponent(tooltipBase + type.translationKey, count).mergeStyle(type.colorCode));
+					}
+				}
 				tooltip.add(new StringTextComponent(""));
-				tooltip.add(new TranslationTextComponent(tooltipBase + "totalRune", counts[7]));
+				tooltip.add(new TranslationTextComponent(tooltipBase + "totalRune", totalRunes));
 			} else
 			{
 				tooltip.add(new StringTextComponent(""));

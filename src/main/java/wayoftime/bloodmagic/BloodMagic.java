@@ -35,6 +35,7 @@ import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import wayoftime.bloodmagic.api.compat.IBloodMagicContainer;
 import wayoftime.bloodmagic.client.ClientEvents;
 import wayoftime.bloodmagic.client.hud.Elements;
 import wayoftime.bloodmagic.client.key.BloodMagicKeyHandler;
@@ -187,6 +188,10 @@ public class BloodMagic
 		LivingArmorRegistrar.register();
 		AnointmentRegistrar.register();
 		AlchemyArrayRegistry.registerBaseArrays();
+
+		IBloodMagicContainer.CONTAINERS.add(player -> player.inventory.mainInventory);
+		IBloodMagicContainer.CONTAINERS.add(player -> player.inventory.armorInventory);
+		IBloodMagicContainer.CONTAINERS.add(player -> player.inventory.offHandInventory);
 	}
 
 	public void registerTileEntityTypes(RegistryEvent.Register<TileEntityType<?>> event)

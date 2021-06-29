@@ -35,7 +35,6 @@ import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import wayoftime.bloodmagic.api.compat.IBloodMagicContainer;
 import wayoftime.bloodmagic.client.ClientEvents;
 import wayoftime.bloodmagic.client.hud.Elements;
 import wayoftime.bloodmagic.client.key.BloodMagicKeyHandler;
@@ -98,6 +97,9 @@ public class BloodMagic
 
 	public static final BloodMagicPacketHandler packetHandler = new BloodMagicPacketHandler();
 	public static final RitualManager RITUAL_MANAGER = new RitualManager();
+
+	public static Boolean curiosLoaded;
+	public static final CuriosCompat curiosCompat = new CuriosCompat();
 
 	public BloodMagic()
 	{
@@ -189,9 +191,10 @@ public class BloodMagic
 		AnointmentRegistrar.register();
 		AlchemyArrayRegistry.registerBaseArrays();
 
-		IBloodMagicContainer.CONTAINERS.add(player -> player.inventory.mainInventory);
-		IBloodMagicContainer.CONTAINERS.add(player -> player.inventory.armorInventory);
-		IBloodMagicContainer.CONTAINERS.add(player -> player.inventory.offHandInventory);
+		if (curiosLoaded)
+		{
+			curiosCompat.registerInventory();
+		}
 	}
 
 	public void registerTileEntityTypes(RegistryEvent.Register<TileEntityType<?>> event)
@@ -252,6 +255,8 @@ public class BloodMagic
 //		LOGGER.info("HELLO FROM PREINIT");
 //		LOGGER.info("DIRT BLOCK >> {}", Blocks.DIRT.getRegistryName());
 		packetHandler.initialize();
+
+		curiosLoaded = ModList.get().isLoaded("curios");
 	}
 
 //	@OnlyIn(Dist.CLIENT)
@@ -284,9 +289,9 @@ public class BloodMagic
 //			return "Hello world";
 //		});
 
-		if (ModList.get().isLoaded("curios"))
+		if (curiosLoaded)
 		{
-			new CuriosCompat().setupSlots(event);
+			curiosCompat.setupSlots(event);
 		}
 	}
 

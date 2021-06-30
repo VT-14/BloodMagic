@@ -16,6 +16,7 @@ public class CuriosCompat
 	public void setupSlots(InterModEnqueueEvent evt)
 	{
 		InterModComms.sendTo("curios", SlotTypeMessage.REGISTER_TYPE, () -> SlotTypePreset.NECKLACE.getMessageBuilder().build());
+		InterModComms.sendTo("curios", SlotTypeMessage.REGISTER_TYPE, () -> SlotTypePreset.CHARM.getMessageBuilder().build());
 	}
 
 	public void registerInventory()

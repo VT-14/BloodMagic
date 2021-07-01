@@ -1,15 +1,12 @@
 package wayoftime.bloodmagic.will;
 
-import java.util.Map;
-import java.util.function.Function;
-
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import wayoftime.bloodmagic.api.compat.EnumDemonWillType;
 import wayoftime.bloodmagic.api.compat.IDemonWill;
 import wayoftime.bloodmagic.api.compat.IDemonWillGem;
-import wayoftime.bloodmagic.impl.BloodMagicAPI;
+import wayoftime.bloodmagic.util.helper.InventoryHelper;
 import wayoftime.bloodmagic.util.helper.NetworkHelper;
 
 /**
@@ -21,22 +18,6 @@ import wayoftime.bloodmagic.util.helper.NetworkHelper;
 public class PlayerDemonWillHandler
 {
 	/**
-	 * Gets all items from all registered inventories.
-	 * 
-	 * @param player - The player who's inventories to check.
-	 * @return - NonNullList<ItemStack> of all items in those inventories.
-	 */
-	public static NonNullList<ItemStack> getAllInventories(PlayerEntity player)
-	{
-		Map<String, Function<PlayerEntity, NonNullList<ItemStack>>> inventoryProvider = BloodMagicAPI.INSTANCE.getInventoryProvider();
-		NonNullList<ItemStack> inventory = NonNullList.create();
-
-		inventoryProvider.forEach((identifier, provider) -> inventory.addAll(provider.apply(player)));
-
-		return inventory;
-	}
-
-	/**
 	 * Gets the total amount of Will a player contains in their inventory
 	 *
 	 * @param type   - The type of Will to check for
@@ -46,7 +27,7 @@ public class PlayerDemonWillHandler
 	public static double getTotalDemonWill(EnumDemonWillType type, PlayerEntity player)
 	{
 
-		NonNullList<ItemStack> inventory = getAllInventories(player);
+		NonNullList<ItemStack> inventory = InventoryHelper.getAllInventories(player);
 		double souls = 0;
 
 		for (ItemStack stack : inventory)
@@ -89,7 +70,7 @@ public class PlayerDemonWillHandler
 	 */
 	public static boolean isDemonWillFull(EnumDemonWillType type, PlayerEntity player)
 	{
-		NonNullList<ItemStack> inventory = getAllInventories(player);
+		NonNullList<ItemStack> inventory = InventoryHelper.getAllInventories(player);
 
 		boolean hasGem = false;
 		for (ItemStack stack : inventory)
@@ -116,7 +97,7 @@ public class PlayerDemonWillHandler
 	{
 		double consumed = 0;
 
-		NonNullList<ItemStack> inventory = getAllInventories(player);
+		NonNullList<ItemStack> inventory = InventoryHelper.getAllInventories(player);
 
 		for (int i = 0; i < inventory.size(); i++)
 		{
@@ -151,7 +132,7 @@ public class PlayerDemonWillHandler
 		if (willStack.isEmpty())
 			return ItemStack.EMPTY;
 
-		NonNullList<ItemStack> inventory = getAllInventories(player);
+		NonNullList<ItemStack> inventory = InventoryHelper.getAllInventories(player);
 
 		for (ItemStack stack : inventory)
 		{
@@ -177,7 +158,7 @@ public class PlayerDemonWillHandler
 	 */
 	public static double addDemonWill(EnumDemonWillType type, PlayerEntity player, double amount)
 	{
-		NonNullList<ItemStack> inventory = getAllInventories(player);
+		NonNullList<ItemStack> inventory = InventoryHelper.getAllInventories(player);
 		double remaining = amount;
 
 		for (ItemStack stack : inventory)
@@ -205,7 +186,7 @@ public class PlayerDemonWillHandler
 	 */
 	public static double addDemonWill(EnumDemonWillType type, PlayerEntity player, double amount, ItemStack ignored)
 	{
-		NonNullList<ItemStack> inventory = getAllInventories(player);
+		NonNullList<ItemStack> inventory = InventoryHelper.getAllInventories(player);
 		double remaining = amount;
 
 		for (ItemStack stack : inventory)

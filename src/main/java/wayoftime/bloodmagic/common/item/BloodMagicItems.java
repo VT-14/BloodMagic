@@ -96,6 +96,8 @@ public class BloodMagicItems
 	public static final RegistryObject<Item> MIMIC_ITEM = ITEMS.register("mimic", () -> new ItemBlockMimic(BloodMagicBlocks.MIMIC.get(), new Item.Properties().group(BloodMagic.TAB)));
 	public static final RegistryObject<Item> MIMIC_ETHEREAL_ITEM = ITEMS.register("ethereal_mimic", () -> new ItemBlockMimic(BloodMagicBlocks.ETHEREAL_MIMIC.get(), new Item.Properties().group(BloodMagic.TAB)));
 
+	public static final RegistryObject<Item> TELEPOSER_ITEM = ITEMS.register("teleposer", () -> new BlockItem(BloodMagicBlocks.TELEPOSER.get(), new Item.Properties().group(BloodMagic.TAB)));
+
 	public static final RegistryObject<Item> NETHE_SOIL_ITEM = ITEMS.register("nether_soil", () -> new BlockItem(BloodMagicBlocks.NETHER_SOIL.get(), new Item.Properties().group(BloodMagic.TAB)));
 	public static final RegistryObject<Item> GROWING_DOUBT_ITEM = ITEMS.register("growing_doubt", () -> new BlockItem(BloodMagicBlocks.GROWING_DOUBT.get(), new Item.Properties().group(BloodMagic.TAB)));
 
@@ -144,6 +146,8 @@ public class BloodMagicItems
 	public static final RegistryObject<Item> LIVING_BOOTS = BASICITEMS.register("livingboots", () -> new ItemLivingArmor(EquipmentSlotType.FEET));
 
 	public static final RegistryObject<Item> LIVING_TOME = BASICITEMS.register("upgradetome", () -> new ItemLivingTome());
+
+	public static final RegistryObject<Item> TELEPOSITION_FOCUS = BASICITEMS.register("teleposerfocus", () -> new ItemTelepositionFocus());
 
 	// Ritual stuffs
 	public static final RegistryObject<Item> WEAK_ACTIVATION_CRYSTAL = BASICITEMS.register("activationcrystalweak", () -> new ItemActivationCrystal(ItemActivationCrystal.CrystalType.WEAK));

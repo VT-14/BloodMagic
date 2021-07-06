@@ -89,6 +89,8 @@ public class GeneratorItemModels extends ItemModelProvider
 		registerCustomFullTexture(BloodMagicBlocks.ETHEREAL_MIMIC.get(), "etherealopaquemimic");
 		this.crop(BloodMagicBlocks.GROWING_DOUBT.get().getRegistryName().getPath(), modLoc("block/creeping_doubt_8"));
 
+		registerBlockModel(BloodMagicBlocks.TELEPOSER.get());
+
 		registerBlockModel(BloodMagicBlocks.SHAPED_CHARGE.get());
 		registerBlockModel(BloodMagicBlocks.DEFORESTER_CHARGE.get());
 		registerBlockModel(BloodMagicBlocks.VEINMINE_CHARGE.get());

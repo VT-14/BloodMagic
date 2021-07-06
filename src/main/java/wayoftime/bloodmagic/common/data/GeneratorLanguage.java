@@ -100,7 +100,7 @@ public class GeneratorLanguage extends LanguageProvider
 
 		add("tooltip.bloodmagic.sigil.water.desc", "Infinite water, anyone?");
 		add("tooltip.bloodmagic.sigil.lava.desc", "HOT! DO NOT EAT");
-		add("tooltip.bloodmagic.sigil.void.desc", "Better than a Swiffer®!");
+		add("tooltip.bloodmagic.sigil.void.desc", "Better than a Swiffer\u00AE!");
 		add("tooltip.bloodmagic.sigil.greengrove.desc", "Environmentally friendly");
 		add("tooltip.bloodmagic.sigil.magnetism.desc", "I have a very magnetic personality");
 		add("tooltip.bloodmagic.sigil.fastminer.desc", "Keep mining, and mining...");
@@ -463,6 +463,8 @@ public class GeneratorLanguage extends LanguageProvider
 		addBlock(BloodMagicBlocks.VEINMINE_CHARGE, "Controlled Charge");
 		addBlock(BloodMagicBlocks.FUNGAL_CHARGE, "Fungal Charge");
 
+		addBlock(BloodMagicBlocks.TELEPOSER, "Teleposer");
+
 		// Item names
 		addItem(BloodMagicItems.WEAK_BLOOD_ORB, "Weak Blood Orb");
 		addItem(BloodMagicItems.APPRENTICE_BLOOD_ORB, "Apprentice Blood Orb");
@@ -533,6 +535,8 @@ public class GeneratorLanguage extends LanguageProvider
 		addItem(BloodMagicItems.BASE_RITUAL_DIVINER, "Ritual Diviner");
 		addItem(BloodMagicItems.DUSK_RITUAL_DIVINER, "Ritual Diviner [Dusk]");
 		addItem(BloodMagicItems.RITUAL_READER, "Ritual Tinkerer");
+
+		addItem(BloodMagicItems.TELEPOSITION_FOCUS, "Teleposition Focus");
 
 		addItem(BloodMagicItems.WEAK_BLOOD_SHARD, "Weak Blood Shard");
 		addItem(BloodMagicItems.RAW_CRYSTAL, "Demon Will Crystal");

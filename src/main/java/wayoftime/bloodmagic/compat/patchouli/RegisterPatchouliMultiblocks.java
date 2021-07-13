@@ -1,6 +1,5 @@
 package wayoftime.bloodmagic.compat.patchouli;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +27,13 @@ import wayoftime.bloodmagic.ritual.RitualComponent;
 
 public class RegisterPatchouliMultiblocks
 {
+	private int maxX;
+	private int minX;
+	private int maxY;
+	private int minY;
+	private int maxZ;
+	private int minZ;
+
 	public RegisterPatchouliMultiblocks()
 	{
 		IPatchouliAPI patAPI = PatchouliAPI.get();
@@ -36,60 +42,124 @@ public class RegisterPatchouliMultiblocks
 		List<Ritual> rituals = BloodMagic.RITUAL_MANAGER.getSortedRituals();
 		for (Ritual ritual : rituals)
 		{
-			Map<BlockPos, EnumRuneType> ritualMap = new HashMap();
+			Map<BlockPos, EnumRuneType> ritualMap = Maps.newHashMap();
 			List<RitualComponent> components = Lists.newArrayList();
 			ritual.gatherComponents(components::add);
 
-			int maxX = 0;
-			int minX = 0;
-			int maxY = 0;
-			int minY = 0;
-			int maxZ = 0;
-			int minZ = 0;
+			resetMinMaxValues();
 			for (RitualComponent component : components) // Get Structure Dimensions.
 			{
 				ritualMap.put(component.getOffset(), component.getRuneType());
 				int x = component.getX(Direction.NORTH);
 				int y = component.getY();
 				int z = component.getZ(Direction.NORTH);
-
-				if (x > maxX)
-				{
-					maxX = x;
-				}
-				if (x < minX)
-				{
-					minX = x;
-				}
-				if (y > maxY)
-				{
-					maxY = y;
-				}
-				if (y < minY)
-				{
-					minY = y;
-				}
-				if (z > maxZ)
-				{
-					maxZ = z;
-				}
-				if (z < minZ)
-				{
-					minZ = z;
-				}
+				checkAndSetMinMaxValues(x, y, z);
 			}
-			int xSize = 1 + maxX - minX;
-			int ySize = 1 + maxY - minY;
 
-			String[][] pattern = new String[ySize][xSize];
-			for (int y = maxY; y >= minY; y--) // Top to Bottom
+			String[][] pattern = makePattern(ritualMap, Maps.newHashMap());
+
+			IMultiblock multiblock = patAPI.makeMultiblock(pattern, 'B', BloodMagicBlocks.BLANK_RITUAL_STONE.get(), 'W', BloodMagicBlocks.WATER_RITUAL_STONE.get(), 'F', BloodMagicBlocks.FIRE_RITUAL_STONE.get(), 'E', BloodMagicBlocks.EARTH_RITUAL_STONE.get(), 'A', BloodMagicBlocks.AIR_RITUAL_STONE.get(), 'D', BloodMagicBlocks.DUSK_RITUAL_STONE.get(), 'd', BloodMagicBlocks.DAWN_RITUAL_STONE.get(), '0', BloodMagicBlocks.MASTER_RITUAL_STONE.get());
+			patAPI.registerMultiblock(new ResourceLocation(BloodMagic.MODID, BloodMagic.RITUAL_MANAGER.getId(ritual)), multiblock);
+		}
+
+		// Blood Altars
+		for (AltarTier tier : AltarTier.values())
+		{
+			String[][] pattern;
+			int shiftMultiblock = 1; // Most Blood Altar Renders should overlap an existing Blood Altar.
+
+			if (tier.equals(AltarTier.ONE)) // Special Case Tier 1 (just the Altar)
 			{
-				for (int x = minX; x <= maxX; x++) // West to East
+				pattern = new String[][] { { "0" }, { "_" } }; // Second level is for multiblock render scale.
+				shiftMultiblock = 0; // This one should not overlap an existing Blood Altar.
+			} else if (tier.equals(AltarTier.TWO)) // Special Case Tier 2. Non-upgraded Runes in corners.
+			{
+				pattern = new String[][] { { "___", "_0_", "___" }, { "rRr", "r_r", "rRr" } };
+			} else
+			{
+				Map<BlockPos, ComponentType> altarMap = Maps.newHashMap();
+				List<AltarComponent> components = tier.getAltarComponents();
+				resetMinMaxValues();
+				for (AltarComponent component : components) // Get Structure Dimensions.
 				{
-					StringBuilder row = new StringBuilder();
-					for (int z = minZ; z <= maxZ; z++) // North to South
+					BlockPos offset = component.getOffset();
+					altarMap.put(offset, component.getComponent());
+					int x = offset.getX();
+					int y = offset.getY();
+					int z = offset.getZ();
+
+					checkAndSetMinMaxValues(x, y, z);
+				}
+				pattern = makePattern(Maps.newHashMap(), altarMap);
+			}
+
+			// TODO: try to make the "display" block cycle between usable blocks).
+
+			IStateMatcher bloodRuneSM = patAPI.predicateMatcher(BloodMagicBlocks.BLANK_RUNE.get(), state -> BloodMagicAPI.INSTANCE.getComponentStates(ComponentType.BLOODRUNE).contains(state));
+			IStateMatcher notAirSM = patAPI.predicateMatcher(Blocks.STONE_BRICKS, state -> state.getMaterial() != Material.AIR && !state.getMaterial().isLiquid());
+			IStateMatcher glowstoneSM = patAPI.predicateMatcher(Blocks.GLOWSTONE, state -> BloodMagicAPI.INSTANCE.getComponentStates(ComponentType.GLOWSTONE).contains(state));
+			IStateMatcher bloodStoneSM = patAPI.predicateMatcher(BloodMagicBlocks.BLOODSTONE.get(), state -> BloodMagicAPI.INSTANCE.getComponentStates(ComponentType.BLOODSTONE).contains(state));
+			IStateMatcher beaconSM = patAPI.predicateMatcher(Blocks.BEACON, state -> BloodMagicAPI.INSTANCE.getComponentStates(ComponentType.BEACON).contains(state));
+			IStateMatcher crystalSM = patAPI.predicateMatcher(Blocks.AIR, state -> BloodMagicAPI.INSTANCE.getComponentStates(ComponentType.CRYSTAL).contains(state));
+
+			IMultiblock multiblock = patAPI.makeMultiblock(pattern, '0', BloodMagicBlocks.BLOOD_ALTAR.get(), 'R', bloodRuneSM, 'P', notAirSM, 'G', glowstoneSM, 'S', bloodStoneSM, 'B', beaconSM, 'C', crystalSM, 'r', BloodMagicBlocks.BLANK_RUNE.get());
+			multiblock.offset(0, shiftMultiblock, 0);
+			patAPI.registerMultiblock(new ResourceLocation(BloodMagic.MODID, "altar_" + tier.name().toLowerCase()), multiblock);
+		}
+	}
+
+	private void resetMinMaxValues()
+	{
+		maxX = 0;
+		minX = 0;
+		maxY = 0;
+		minY = 0;
+		maxZ = 0;
+		minZ = 0;
+	}
+
+	private void checkAndSetMinMaxValues(int x, int y, int z)
+	{
+		if (x > this.maxX)
+		{
+			maxX = x;
+		}
+		if (x < minX)
+		{
+			minX = x;
+		}
+		if (y > maxY)
+		{
+			maxY = y;
+		}
+		if (y < minY)
+		{
+			minY = y;
+		}
+		if (z > maxZ)
+		{
+			maxZ = z;
+		}
+		if (z < minZ)
+		{
+			minZ = z;
+		}
+	}
+
+	private String[][] makePattern(Map<BlockPos, EnumRuneType> ritualMap, Map<BlockPos, ComponentType> altarMap)
+	{
+		String[][] pattern = new String[1 + maxY - minY][1 + maxX - minX];
+		for (int y = maxY; y >= minY; y--) // Top to Bottom
+		{
+			for (int x = minX; x <= maxX; x++) // West to East
+			{
+				StringBuilder row = new StringBuilder();
+				for (int z = minZ; z <= maxZ; z++) // North to South
+				{
+					BlockPos pos = new BlockPos(x, y, z);
+
+					if (!ritualMap.isEmpty()) // Rituals
 					{
-						BlockPos pos = new BlockPos(x, y, z);
 						EnumRuneType rune = ritualMap.get(pos);
 						if (rune != null)
 						{
@@ -120,143 +190,53 @@ public class RegisterPatchouliMultiblocks
 							}
 						} else
 						{
-							if (y == 0 && x == 0 && z == 0)
-							{
-								row.append('0'); // Master Ritual Stone
-							} else
-							{
-								row.append('_'); // Patchouli's "Anything" Character.
-							}
+							row.append(checkEmptySpace(x, y, z));
 						}
-					}
-					pattern[maxY - y][x - minX] = row.toString();
-				}
-			}
-			IMultiblock multiblock = patAPI.makeMultiblock(pattern, 'B', BloodMagicBlocks.BLANK_RITUAL_STONE.get(), 'W', BloodMagicBlocks.WATER_RITUAL_STONE.get(), 'F', BloodMagicBlocks.FIRE_RITUAL_STONE.get(), 'E', BloodMagicBlocks.EARTH_RITUAL_STONE.get(), 'A', BloodMagicBlocks.AIR_RITUAL_STONE.get(), 'D', BloodMagicBlocks.DUSK_RITUAL_STONE.get(), 'd', BloodMagicBlocks.DAWN_RITUAL_STONE.get(), '0', BloodMagicBlocks.MASTER_RITUAL_STONE.get());
-			patAPI.registerMultiblock(new ResourceLocation(BloodMagic.MODID, BloodMagic.RITUAL_MANAGER.getId(ritual)), multiblock);
-		}
-
-		// Blood Altars
-		for (AltarTier tier : AltarTier.values())
-		{
-			String[][] pattern;
-			int shiftMultiblock = 1;
-
-			if (tier.equals(AltarTier.ONE)) // Special Case Tier 1
-			{
-				pattern = new String[][] { { "0" }, { "_" } };
-				shiftMultiblock = 0;
-			} else if (tier.equals(AltarTier.TWO))
-			{ // Special Case Tier 2. Non-upgraded Runes.
-				pattern = new String[][] { { "___", "_0_", "___" }, { "rRr", "r_r", "rRr" } };
-			} else
-			{
-				Map<BlockPos, ComponentType> altarMap = Maps.newHashMap();
-				List<AltarComponent> components = tier.getAltarComponents();
-				int maxX = 0;
-				int minX = 0;
-				int maxY = 0;
-				int minY = 0;
-				int maxZ = 0;
-				int minZ = 0;
-				for (AltarComponent component : components) // Get Structure Dimensions.
-				{
-					BlockPos offset = component.getOffset();
-					altarMap.put(offset, component.getComponent());
-					int x = offset.getX();
-					int y = offset.getY();
-					int z = offset.getZ();
-
-					if (x > maxX)
+					} else if (!altarMap.isEmpty()) // Blood Altars
 					{
-						maxX = x;
-					}
-					if (x < minX)
-					{
-						minX = x;
-					}
-					if (y > maxY)
-					{
-						maxY = y;
-					}
-					if (y < minY)
-					{
-						minY = y;
-					}
-					if (z > maxZ)
-					{
-						maxZ = z;
-					}
-					if (z < minZ)
-					{
-						minZ = z;
-					}
-				}
-				int xSize = 1 + maxX - minX;
-				int ySize = 1 + maxY - minY;
-
-				pattern = new String[ySize][xSize];
-				for (int y = maxY; y >= minY; y--) // Top to Bottom
-				{
-					for (int x = minX; x <= maxX; x++) // West to East
-					{
-						StringBuilder row = new StringBuilder();
-						for (int z = minZ; z <= maxZ; z++) // North to South
+						ComponentType component = altarMap.get(pos);
+						if (component != null)
 						{
-							BlockPos pos = new BlockPos(x, y, z);
-							ComponentType component = altarMap.get(pos);
-							if (component != null)
+							String name = component.name();
+							PickComponent: switch (name)
 							{
-								String name = component.name();
-								PickComponent: switch (name)
-								{
-								case "BLOODRUNE":
-									row.append('R');
-									break PickComponent;
-								case "NOTAIR":
-									row.append('P');
-									break PickComponent;
-								case "GLOWSTONE":
-									row.append('G');
-									break PickComponent;
-								case "BLOODSTONE":
-									row.append('S');
-									break PickComponent;
-								case "BEACON":
-									row.append('B');
-									break PickComponent;
-								case "CRYSTAL":
-									row.append('C');
-									break PickComponent;
-								}
-							} else
-							{
-								if (y == 0 && x == 0 && z == 0)
-								{
-									row.append('0'); // Blood Altar.
-								} else
-								{
-									row.append('_'); // Patchouli's "Anything" Character.
-								}
+							case "BLOODRUNE":
+								row.append('R');
+								break PickComponent;
+							case "NOTAIR":
+								row.append('P');
+								break PickComponent;
+							case "GLOWSTONE":
+								row.append('G');
+								break PickComponent;
+							case "BLOODSTONE":
+								row.append('S');
+								break PickComponent;
+							case "BEACON":
+								row.append('B');
+								break PickComponent;
+							case "CRYSTAL":
+								row.append('C');
+								break PickComponent;
 							}
+						} else
+						{
+							row.append(checkEmptySpace(x, y, z));
 						}
-						pattern[maxY - y][x - minX] = row.toString();
 					}
 				}
+				pattern[maxY - y][x - minX] = row.toString();
 			}
-
-			// TODO: try to make the "display" block cycle between usable blocks).
-
-			IStateMatcher bloodRuneSM = patAPI.predicateMatcher(BloodMagicBlocks.BLANK_RUNE.get(), state -> BloodMagicAPI.INSTANCE.getComponentStates(ComponentType.BLOODRUNE).contains(state));
-			IStateMatcher notAirSM = patAPI.predicateMatcher(Blocks.STONE_BRICKS, state -> state.getMaterial() != Material.AIR && !state.getMaterial().isLiquid());
-			IStateMatcher glowstoneSM = patAPI.predicateMatcher(Blocks.GLOWSTONE, state -> BloodMagicAPI.INSTANCE.getComponentStates(ComponentType.GLOWSTONE).contains(state));
-			IStateMatcher bloodStoneSM = patAPI.predicateMatcher(BloodMagicBlocks.BLOODSTONE.get(), state -> BloodMagicAPI.INSTANCE.getComponentStates(ComponentType.BLOODSTONE).contains(state));
-			IStateMatcher beaconSM = patAPI.predicateMatcher(Blocks.BEACON, state -> BloodMagicAPI.INSTANCE.getComponentStates(ComponentType.BEACON).contains(state));
-			IStateMatcher crystalSM = patAPI.predicateMatcher(Blocks.AIR, state -> BloodMagicAPI.INSTANCE.getComponentStates(ComponentType.CRYSTAL).contains(state));
-
-			IMultiblock multiblock = patAPI.makeMultiblock(pattern, '0', BloodMagicBlocks.BLOOD_ALTAR.get(), 'R', bloodRuneSM, 'P', notAirSM, 'G', glowstoneSM, 'S', bloodStoneSM, 'B', beaconSM, 'C', crystalSM, 'r', BloodMagicBlocks.BLANK_RUNE.get());
-			multiblock.offset(0, shiftMultiblock, 0);
-			patAPI.registerMultiblock(new ResourceLocation(BloodMagic.MODID, "altar_" + tier.name().toLowerCase()), multiblock);
 		}
+		return pattern;
+	}
+
+	private Character checkEmptySpace(int x, int y, int z)
+	{
+		if (x == 0 && y == 0 && z == 0)
+		{
+			return '0'; // Center of Multiblock (MRS or Altar)
+		} else
+			return '_'; // Patchouli's "Any Block" Symbol
 	}
 }

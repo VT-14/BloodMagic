@@ -52,19 +52,29 @@ public class RegisterPatchouliMultiblocks
 			List<RitualComponent> components = Lists.newArrayList();
 			ritual.gatherComponents(components::add);
 
-			resetMinMaxValues();
-			for (RitualComponent component : components) // Get Structure Dimensions.
+			resetMinMaxValues(); // Clear previous Scale
+			for (RitualComponent component : components) // Set Scale and Map
 			{
 				ritualMap.put(component.getOffset(), component.getRuneType());
-				int x = component.getX(Direction.NORTH);
-				int y = component.getY();
-				int z = component.getZ(Direction.NORTH);
-				checkAndSetMinMaxValues(x, y, z);
+				checkAndSetMinMaxValues(component.getX(Direction.NORTH), component.getY(), component.getZ(Direction.NORTH));
 			}
 
 			String[][] pattern = makePattern(ritualMap, Collections.emptyMap());
 
-			IMultiblock multiblock = patAPI.makeMultiblock(pattern, 'B', BloodMagicBlocks.BLANK_RITUAL_STONE.get(), 'W', BloodMagicBlocks.WATER_RITUAL_STONE.get(), 'F', BloodMagicBlocks.FIRE_RITUAL_STONE.get(), 'E', BloodMagicBlocks.EARTH_RITUAL_STONE.get(), 'A', BloodMagicBlocks.AIR_RITUAL_STONE.get(), 'D', BloodMagicBlocks.DUSK_RITUAL_STONE.get(), 'd', BloodMagicBlocks.DAWN_RITUAL_STONE.get(), '0', BloodMagicBlocks.MASTER_RITUAL_STONE.get());
+			// @formatter:off
+			IMultiblock multiblock = patAPI.makeMultiblock(
+					pattern, //
+					'B', BloodMagicBlocks.BLANK_RITUAL_STONE.get(),
+					'W', BloodMagicBlocks.WATER_RITUAL_STONE.get(),
+					'F', BloodMagicBlocks.FIRE_RITUAL_STONE.get(),
+					'E', BloodMagicBlocks.EARTH_RITUAL_STONE.get(),
+					'A', BloodMagicBlocks.AIR_RITUAL_STONE.get(),
+					'D', BloodMagicBlocks.DUSK_RITUAL_STONE.get(),
+					'd', BloodMagicBlocks.DAWN_RITUAL_STONE.get(),
+					'0', BloodMagicBlocks.MASTER_RITUAL_STONE.get()
+			); 
+			// @formatter:on
+
 			patAPI.registerMultiblock(new ResourceLocation(BloodMagic.MODID, BloodMagic.RITUAL_MANAGER.getId(ritual)), multiblock);
 		}
 
@@ -85,16 +95,13 @@ public class RegisterPatchouliMultiblocks
 			{
 				Map<BlockPos, ComponentType> altarMap = Maps.newHashMap();
 				List<AltarComponent> components = tier.getAltarComponents();
-				resetMinMaxValues();
-				for (AltarComponent component : components) // Get Structure Dimensions.
+
+				resetMinMaxValues(); // Clear previous Scale
+				for (AltarComponent component : components) // Set Scale and Map
 				{
 					BlockPos offset = component.getOffset();
 					altarMap.put(offset, component.getComponent());
-					int x = offset.getX();
-					int y = offset.getY();
-					int z = offset.getZ();
-
-					checkAndSetMinMaxValues(x, y, z);
+					checkAndSetMinMaxValues(offset.getX(), offset.getY(), offset.getZ());
 				}
 				pattern = makePattern(Collections.emptyMap(), altarMap);
 			}
@@ -107,20 +114,28 @@ public class RegisterPatchouliMultiblocks
 			BMStateMatcher beaconSM = new BMStateMatcher(bmAPI.getComponentStates(ComponentType.BEACON));
 			BMStateMatcher crystalSM = new BMStateMatcher(bmAPI.getComponentStates(ComponentType.CRYSTAL));
 
-			IMultiblock multiblock = patAPI.makeMultiblock(pattern, '0', BloodMagicBlocks.BLOOD_ALTAR.get(), 'R', bloodRuneSM, 'P', notAirSM, 'G', glowstoneSM, 'S', bloodStoneSM, 'B', beaconSM, 'C', crystalSM, 'r', blankBloodRuneSM);
+			// @formatter:off
+			IMultiblock multiblock = patAPI.makeMultiblock(
+					pattern,
+					'R', bloodRuneSM,
+					'P', notAirSM,
+					'G', glowstoneSM,
+					'S', bloodStoneSM,
+					'B', beaconSM,
+					'C', crystalSM,
+					'r', blankBloodRuneSM,
+					'0', BloodMagicBlocks.BLOOD_ALTAR.get()
+			);
+			// @formatter:on
 			multiblock.offset(0, shiftMultiblock, 0);
+
 			patAPI.registerMultiblock(new ResourceLocation(BloodMagic.MODID, "altar_" + tier.name().toLowerCase()), multiblock);
 		}
 	}
 
 	private void resetMinMaxValues()
 	{
-		maxX = 0;
-		minX = 0;
-		maxY = 0;
-		minY = 0;
-		maxZ = 0;
-		minZ = 0;
+		maxX = minX = maxY = minY = maxZ = minZ = 0;
 	}
 
 	private void checkAndSetMinMaxValues(int x, int y, int z)
@@ -250,10 +265,10 @@ public class RegisterPatchouliMultiblocks
 		private final List<BlockState> render; // BlockStates to Render
 		private final List<BlockState> valid; // BlockStates that are Valid.
 
-		private BMStateMatcher(Block singleRender, List<BlockState> valid)
+		private BMStateMatcher(Block singleBlockRender, List<BlockState> valid)
 		{
 			List<BlockState> render = Lists.newArrayList();
-			render.add(singleRender.getDefaultState());
+			render.add(singleBlockRender.getDefaultState());
 			this.render = render;
 			this.valid = valid;
 		}
@@ -282,6 +297,5 @@ public class RegisterPatchouliMultiblocks
 		{
 			return (w, p, s) -> valid.contains(s);
 		}
-
 	}
 }

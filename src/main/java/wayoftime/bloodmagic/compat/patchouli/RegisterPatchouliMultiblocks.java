@@ -6,11 +6,15 @@ import java.util.Map;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.material.Material;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockReader;
+import net.minecraftforge.common.util.TriPredicate;
 import vazkii.patchouli.api.IMultiblock;
 import vazkii.patchouli.api.IStateMatcher;
 import vazkii.patchouli.api.PatchouliAPI;
@@ -37,6 +41,7 @@ public class RegisterPatchouliMultiblocks
 	public RegisterPatchouliMultiblocks()
 	{
 		IPatchouliAPI patAPI = PatchouliAPI.get();
+		BloodMagicAPI bmAPI = BloodMagicAPI.INSTANCE;
 
 		// Rituals
 		List<Ritual> rituals = BloodMagic.RITUAL_MANAGER.getSortedRituals();
@@ -74,7 +79,7 @@ public class RegisterPatchouliMultiblocks
 				shiftMultiblock = 0; // This one should not overlap an existing Blood Altar.
 			} else if (tier.equals(AltarTier.TWO)) // Special Case Tier 2. Non-upgraded Runes in corners.
 			{
-				pattern = new String[][] { { "___", "_0_", "___" }, { "rRr", "r_r", "rRr" } };
+				pattern = new String[][] { { "___", "_0_", "___" }, { "rRr", "R_R", "rRr" } };
 			} else
 			{
 				Map<BlockPos, ComponentType> altarMap = Maps.newHashMap();
@@ -93,16 +98,15 @@ public class RegisterPatchouliMultiblocks
 				pattern = makePattern(Maps.newHashMap(), altarMap);
 			}
 
-			// TODO: try to make the "display" block cycle between usable blocks).
-
-			IStateMatcher bloodRuneSM = patAPI.predicateMatcher(BloodMagicBlocks.BLANK_RUNE.get(), state -> BloodMagicAPI.INSTANCE.getComponentStates(ComponentType.BLOODRUNE).contains(state));
+			BMStateMatcher bloodRuneSM = new BMStateMatcher(bmAPI.getComponentStates(ComponentType.BLOODRUNE));
+			BMStateMatcher blankBloodRuneSM = new BMStateMatcher(BloodMagicBlocks.BLANK_RUNE.get(), bmAPI.getComponentStates(ComponentType.BLOODRUNE));
 			IStateMatcher notAirSM = patAPI.predicateMatcher(Blocks.STONE_BRICKS, state -> state.getMaterial() != Material.AIR && !state.getMaterial().isLiquid());
-			IStateMatcher glowstoneSM = patAPI.predicateMatcher(Blocks.GLOWSTONE, state -> BloodMagicAPI.INSTANCE.getComponentStates(ComponentType.GLOWSTONE).contains(state));
-			IStateMatcher bloodStoneSM = patAPI.predicateMatcher(BloodMagicBlocks.BLOODSTONE.get(), state -> BloodMagicAPI.INSTANCE.getComponentStates(ComponentType.BLOODSTONE).contains(state));
-			IStateMatcher beaconSM = patAPI.predicateMatcher(Blocks.BEACON, state -> BloodMagicAPI.INSTANCE.getComponentStates(ComponentType.BEACON).contains(state));
-			IStateMatcher crystalSM = patAPI.predicateMatcher(Blocks.AIR, state -> BloodMagicAPI.INSTANCE.getComponentStates(ComponentType.CRYSTAL).contains(state));
+			BMStateMatcher glowstoneSM = new BMStateMatcher(bmAPI.getComponentStates(ComponentType.GLOWSTONE));
+			BMStateMatcher bloodStoneSM = new BMStateMatcher(bmAPI.getComponentStates(ComponentType.BLOODSTONE));
+			BMStateMatcher beaconSM = new BMStateMatcher(bmAPI.getComponentStates(ComponentType.BEACON));
+			BMStateMatcher crystalSM = new BMStateMatcher(bmAPI.getComponentStates(ComponentType.CRYSTAL));
 
-			IMultiblock multiblock = patAPI.makeMultiblock(pattern, '0', BloodMagicBlocks.BLOOD_ALTAR.get(), 'R', bloodRuneSM, 'P', notAirSM, 'G', glowstoneSM, 'S', bloodStoneSM, 'B', beaconSM, 'C', crystalSM, 'r', BloodMagicBlocks.BLANK_RUNE.get());
+			IMultiblock multiblock = patAPI.makeMultiblock(pattern, '0', BloodMagicBlocks.BLOOD_ALTAR.get(), 'R', bloodRuneSM, 'P', notAirSM, 'G', glowstoneSM, 'S', bloodStoneSM, 'B', beaconSM, 'C', crystalSM, 'r', blankBloodRuneSM);
 			multiblock.offset(0, shiftMultiblock, 0);
 			patAPI.registerMultiblock(new ResourceLocation(BloodMagic.MODID, "altar_" + tier.name().toLowerCase()), multiblock);
 		}
@@ -238,5 +242,45 @@ public class RegisterPatchouliMultiblocks
 			return '0'; // Center of Multiblock (MRS or Altar)
 		} else
 			return '_'; // Patchouli's "Any Block" Symbol
+	}
+
+	private class BMStateMatcher implements IStateMatcher
+	{
+		private final List<BlockState> render; // BlockStates to Render
+		private final List<BlockState> valid; // BlockStates that are Valid.
+
+		private BMStateMatcher(Block render, List<BlockState> valid)
+		{
+			List<BlockState> renderList = Lists.newArrayList();
+			renderList.add(render.getDefaultState());
+			this.render = renderList;
+			this.valid = valid;
+		}
+
+		private BMStateMatcher(List<BlockState> renderAndValid)
+		{
+			this.render = renderAndValid;
+			this.valid = renderAndValid;
+		}
+
+		@Override
+		public BlockState getDisplayedState(int ticks)
+		{
+			if (render.isEmpty())
+			{
+				return Blocks.BEDROCK.getDefaultState(); // show something impossible
+			} else
+			{
+				int idx = (ticks / 20) % render.size();
+				return render.get(idx);
+			}
+		}
+
+		@Override
+		public TriPredicate<IBlockReader, BlockPos, BlockState> getStatePredicate()
+		{
+			return (w, p, s) -> valid.contains(s);
+		}
+
 	}
 }

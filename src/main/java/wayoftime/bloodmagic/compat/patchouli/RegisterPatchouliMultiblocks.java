@@ -1,5 +1,6 @@
 package wayoftime.bloodmagic.compat.patchouli;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -61,7 +62,7 @@ public class RegisterPatchouliMultiblocks
 				checkAndSetMinMaxValues(x, y, z);
 			}
 
-			String[][] pattern = makePattern(ritualMap, Maps.newHashMap());
+			String[][] pattern = makePattern(ritualMap, Collections.emptyMap());
 
 			IMultiblock multiblock = patAPI.makeMultiblock(pattern, 'B', BloodMagicBlocks.BLANK_RITUAL_STONE.get(), 'W', BloodMagicBlocks.WATER_RITUAL_STONE.get(), 'F', BloodMagicBlocks.FIRE_RITUAL_STONE.get(), 'E', BloodMagicBlocks.EARTH_RITUAL_STONE.get(), 'A', BloodMagicBlocks.AIR_RITUAL_STONE.get(), 'D', BloodMagicBlocks.DUSK_RITUAL_STONE.get(), 'd', BloodMagicBlocks.DAWN_RITUAL_STONE.get(), '0', BloodMagicBlocks.MASTER_RITUAL_STONE.get());
 			patAPI.registerMultiblock(new ResourceLocation(BloodMagic.MODID, BloodMagic.RITUAL_MANAGER.getId(ritual)), multiblock);
@@ -95,7 +96,7 @@ public class RegisterPatchouliMultiblocks
 
 					checkAndSetMinMaxValues(x, y, z);
 				}
-				pattern = makePattern(Maps.newHashMap(), altarMap);
+				pattern = makePattern(Collections.emptyMap(), altarMap);
 			}
 
 			BMStateMatcher bloodRuneSM = new BMStateMatcher(bmAPI.getComponentStates(ComponentType.BLOODRUNE));
@@ -124,7 +125,7 @@ public class RegisterPatchouliMultiblocks
 
 	private void checkAndSetMinMaxValues(int x, int y, int z)
 	{
-		if (x > this.maxX)
+		if (x > maxX)
 		{
 			maxX = x;
 		}
@@ -239,7 +240,7 @@ public class RegisterPatchouliMultiblocks
 	{
 		if (x == 0 && y == 0 && z == 0)
 		{
-			return '0'; // Center of Multiblock (MRS or Altar)
+			return '0'; // Center of Multiblock (MRS or Blood Altar)
 		} else
 			return '_'; // Patchouli's "Any Block" Symbol
 	}
@@ -249,11 +250,11 @@ public class RegisterPatchouliMultiblocks
 		private final List<BlockState> render; // BlockStates to Render
 		private final List<BlockState> valid; // BlockStates that are Valid.
 
-		private BMStateMatcher(Block render, List<BlockState> valid)
+		private BMStateMatcher(Block singleRender, List<BlockState> valid)
 		{
-			List<BlockState> renderList = Lists.newArrayList();
-			renderList.add(render.getDefaultState());
-			this.render = renderList;
+			List<BlockState> render = Lists.newArrayList();
+			render.add(singleRender.getDefaultState());
+			this.render = render;
 			this.valid = valid;
 		}
 

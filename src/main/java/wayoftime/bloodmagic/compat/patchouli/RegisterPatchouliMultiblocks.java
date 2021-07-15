@@ -63,7 +63,7 @@ public class RegisterPatchouliMultiblocks
 
 			// @formatter:off
 			IMultiblock multiblock = patAPI.makeMultiblock(
-					pattern, //
+					pattern,
 					'B', BloodMagicBlocks.BLANK_RITUAL_STONE.get(),
 					'W', BloodMagicBlocks.WATER_RITUAL_STONE.get(),
 					'F', BloodMagicBlocks.FIRE_RITUAL_STONE.get(),

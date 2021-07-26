@@ -49,6 +49,8 @@ public class GeneratorBaseRecipes extends BaseRecipeProvider
 		ShapelessRecipeBuilder.shapelessRecipe(BloodMagicBlocks.STONE_TILE_PATH.get(), 4).addIngredient(BloodMagicBlocks.STONE_PATH.get()).addIngredient(BloodMagicBlocks.STONE_PATH.get()).addIngredient(BloodMagicBlocks.STONE_PATH.get()).addIngredient(BloodMagicBlocks.STONE_PATH.get()).addCriterion("has_magician_orb", hasItem(BloodMagicItems.MAGICIAN_BLOOD_ORB.get())).build(consumer, BloodMagic.rl("path/path_stonetile"));
 		ShapelessRecipeBuilder.shapelessRecipe(BloodMagicBlocks.WORN_STONE_TILE_PATH.get(), 4).addIngredient(BloodMagicBlocks.WORN_STONE_PATH.get()).addIngredient(BloodMagicBlocks.WORN_STONE_PATH.get()).addIngredient(BloodMagicBlocks.WORN_STONE_PATH.get()).addIngredient(BloodMagicBlocks.WORN_STONE_PATH.get()).addCriterion("has_master_orb", hasItem(BloodMagicItems.MASTER_BLOOD_ORB.get())).build(consumer, BloodMagic.rl("path/path_wornstonetile"));
 
+		ShapedRecipeBuilder.shapedRecipe(BloodMagicItems.TELEPOSER_ITEM.get()).key('g', Tags.Items.INGOTS_GOLD).key('e', Tags.Items.ENDER_PEARLS).key('t', BloodMagicItems.TELEPOSITION_FOCUS.get()).patternLine("ggg").patternLine("ete").patternLine("ggg").addCriterion("has_teleposer_focus", hasItem(BloodMagicItems.TELEPOSITION_FOCUS.get())).build(consumer, BloodMagic.rl("teleposer"));
+
 		// Changed Recipes
 		{
 //			ShapedRecipeBuilder.shapedRecipe(BloodMagicBlocks.BLOOD_ALTAR.get()).key('a', Tags.Items.STONE).key('b', Items.FURNACE).key('c', Tags.Items.INGOTS_GOLD).key('d', BloodMagicItems.MONSTER_SOUL_RAW.get()).patternLine("a a").patternLine("aba").patternLine("cdc").addCriterion("has_will", hasItem(BloodMagicItems.MONSTER_SOUL_RAW.get())).build(consumer, BloodMagic.rl("blood_altar"));

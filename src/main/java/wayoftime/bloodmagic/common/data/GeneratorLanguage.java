@@ -474,6 +474,8 @@ public class GeneratorLanguage extends LanguageProvider
 		addBlock(BloodMagicBlocks.VEINMINE_CHARGE, "Controlled Charge");
 		addBlock(BloodMagicBlocks.FUNGAL_CHARGE, "Fungal Charge");
 
+		addBlock(BloodMagicBlocks.TELEPOSER, "Teleposer");
+
 		// Item names
 		addItem(BloodMagicItems.WEAK_BLOOD_ORB, "Weak Blood Orb");
 		addItem(BloodMagicItems.APPRENTICE_BLOOD_ORB, "Apprentice Blood Orb");
@@ -545,6 +547,8 @@ public class GeneratorLanguage extends LanguageProvider
 		addItem(BloodMagicItems.BASE_RITUAL_DIVINER, "Ritual Diviner");
 		addItem(BloodMagicItems.DUSK_RITUAL_DIVINER, "Ritual Diviner [Dusk]");
 		addItem(BloodMagicItems.RITUAL_READER, "Ritual Tinkerer");
+
+		addItem(BloodMagicItems.TELEPOSITION_FOCUS, "Teleposition Focus");
 
 		addItem(BloodMagicItems.WEAK_BLOOD_SHARD, "Weak Blood Shard");
 		addItem(BloodMagicItems.RAW_CRYSTAL, "Demon Will Crystal");

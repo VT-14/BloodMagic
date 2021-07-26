@@ -96,6 +96,8 @@ public class GeneratorBlockStates extends BlockStateProvider
 		buildOrientable(BloodMagicBlocks.DEFORESTER_CHARGE.get(), "deforester_charge", modLoc("block/sub/shaped_charge"), new ResourceLocation("block/oak_log_top"), new ResourceLocation("block/oak_log_top"), modLoc("block/blankrune"), new ResourceLocation("block/oak_planks"), modLoc("models/defaultcrystal"));
 		buildOrientable(BloodMagicBlocks.VEINMINE_CHARGE.get(), "veinmine_charge", modLoc("block/sub/shaped_charge"), new ResourceLocation("block/sandstone_bottom"), new ResourceLocation("block/sandstone_bottom"), modLoc("block/blankrune"), new ResourceLocation("block/sand"), modLoc("models/defaultcrystal"));
 		buildOrientable(BloodMagicBlocks.FUNGAL_CHARGE.get(), "fungal_charge", modLoc("block/sub/shaped_charge"), new ResourceLocation("block/nether_wart_block"), new ResourceLocation("block/crimson_planks"), modLoc("block/blankrune"), new ResourceLocation("block/crimson_stem"), modLoc("models/defaultcrystal"));
+
+		buildCubeTop(BloodMagicBlocks.TELEPOSER.get());
 	}
 
 	private void buildOrientable(Block block, String name, ResourceLocation modelPath, ResourceLocation base, ResourceLocation edges, ResourceLocation centerCap, ResourceLocation binding, ResourceLocation core)
@@ -353,5 +355,12 @@ public class GeneratorBlockStates extends BlockStateProvider
 		builder.partialState().with(BlockAlchemicalReactionChamber.FACING, Direction.WEST).with(BlockAlchemicalReactionChamber.LIT, true).modelForState().modelFile(furnace_off).rotationY(270).addModel();
 
 //		getVariantBuilder(block).
+	}
+
+	private void buildCubeTop(Block block)
+	{
+		String basePath = block.getRegistryName().getPath();
+		ModelFile modelFile = models().cubeTop(basePath, BloodMagic.rl("block/" + basePath + "_side"), BloodMagic.rl("block/" + basePath + "_top"));
+		getVariantBuilder(block).forAllStates(state -> ConfiguredModel.builder().modelFile(modelFile).build());
 	}
 }

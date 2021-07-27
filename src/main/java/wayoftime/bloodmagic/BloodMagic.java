@@ -81,6 +81,7 @@ import wayoftime.bloodmagic.tile.TileMasterRitualStone;
 import wayoftime.bloodmagic.tile.TileMimic;
 import wayoftime.bloodmagic.tile.TileShapedExplosive;
 import wayoftime.bloodmagic.tile.TileSoulForge;
+import wayoftime.bloodmagic.tile.TileTeleposer;
 import wayoftime.bloodmagic.tile.TileVeinMineCharge;
 import wayoftime.bloodmagic.util.handler.event.GenericHandler;
 import wayoftime.bloodmagic.util.handler.event.WillHandler;
@@ -211,7 +212,7 @@ public class BloodMagic
 		event.getRegistry().register(TileEntityType.Builder.create(TileDeforesterCharge::new, BloodMagicBlocks.DEFORESTER_CHARGE.get()).build(null).setRegistryName("deforester_charge"));
 		event.getRegistry().register(TileEntityType.Builder.create(TileVeinMineCharge::new, BloodMagicBlocks.VEINMINE_CHARGE.get()).build(null).setRegistryName("veinmine_charge"));
 		event.getRegistry().register(TileEntityType.Builder.create(TileFungalCharge::new, BloodMagicBlocks.FUNGAL_CHARGE.get()).build(null).setRegistryName("fungal_charge"));
-
+		event.getRegistry().register(TileEntityType.Builder.create(TileTeleposer::new, BloodMagicBlocks.TELEPOSER.get()).build(null).setRegistryName("teleposer"));
 	}
 
 	@SubscribeEvent

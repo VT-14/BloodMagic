@@ -38,6 +38,7 @@ import wayoftime.bloodmagic.ritual.EnumRuneType;
 import wayoftime.bloodmagic.tile.container.ContainerAlchemicalReactionChamber;
 import wayoftime.bloodmagic.tile.container.ContainerAlchemyTable;
 import wayoftime.bloodmagic.tile.container.ContainerSoulForge;
+import wayoftime.bloodmagic.tile.container.ContainerTeleposer;
 
 public class BloodMagicBlocks
 {
@@ -106,7 +107,7 @@ public class BloodMagicBlocks
 	public static final RegistryObject<Block> MIMIC = BLOCKS.register("mimic", () -> new BlockMimic(Properties.create(Material.IRON).sound(SoundType.METAL).hardnessAndResistance(2.0f).setOpaque(BloodMagicBlocks::isntSolid).setSuffocates(BloodMagicBlocks::isntSolid).setBlocksVision(BloodMagicBlocks::isntSolid).notSolid()));
 	public static final RegistryObject<Block> ETHEREAL_MIMIC = BLOCKS.register("ethereal_mimic", () -> new BlockMimic(Properties.create(Material.IRON).sound(SoundType.METAL).hardnessAndResistance(2.0f).setOpaque(BloodMagicBlocks::isntSolid).setSuffocates(BloodMagicBlocks::isntSolid).setBlocksVision(BloodMagicBlocks::isntSolid).notSolid().doesNotBlockMovement()));
 
-	public static final RegistryObject<Block> TELEPOSER = BLOCKS.register("teleposer", () -> new Teleposer());
+	public static final RegistryObject<Block> TELEPOSER = BLOCKS.register("teleposer", () -> new BlockTeleposer());
 
 	private static ForgeFlowingFluid.Properties makeLifeEssenceProperties()
 	{
@@ -135,6 +136,7 @@ public class BloodMagicBlocks
 	public static final RegistryObject<ContainerType<ContainerAlchemicalReactionChamber>> ARC_CONTAINER = CONTAINERS.register("arc_container", () -> IForgeContainerType.create(ContainerAlchemicalReactionChamber::new));
 	public static final RegistryObject<ContainerType<ContainerAlchemyTable>> ALCHEMY_TABLE_CONTAINER = CONTAINERS.register("alchemy_table_container", () -> IForgeContainerType.create(ContainerAlchemyTable::new));
 	public static final RegistryObject<ContainerType<ContainerHolding>> HOLDING_CONTAINER = CONTAINERS.register("holding_container", () -> IForgeContainerType.create(ContainerHolding::new));
+	public static final RegistryObject<ContainerType<ContainerTeleposer>> TELEPOSER_CONTAINER = CONTAINERS.register("teleposer_container", () -> IForgeContainerType.create(ContainerTeleposer::new));
 
 	// Dungeon Blocks
 	public static final RegistryObject<Block> DUNGEON_BRICK_1 = DUNGEONBLOCKS.register("dungeon_brick1", () -> new Block(Properties.create(Material.ROCK).hardnessAndResistance(2.0F, 5.0F).sound(SoundType.STONE).harvestTool(ToolType.PICKAXE).harvestLevel(2).setRequiresTool()));

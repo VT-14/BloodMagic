@@ -1,12 +1,16 @@
 package wayoftime.bloodmagic.common.block;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
@@ -83,6 +87,19 @@ public class BlockTeleposer extends Block
 			}
 
 			super.onReplaced(state, worldIn, pos, newState, isMoving);
+		}
+	}
+
+	@Override
+	public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack)
+	{
+		if (stack.hasDisplayName())
+		{
+			TileEntity tileEntity = worldIn.getTileEntity(pos);
+			if (tileEntity instanceof TileTeleposer)
+			{
+				((TileTeleposer) tileEntity).setCustomName(stack.getDisplayName());
+			}
 		}
 	}
 }

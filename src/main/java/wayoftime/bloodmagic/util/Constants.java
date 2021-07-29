@@ -39,6 +39,7 @@ public class Constants
 		public static final String RITUAL_READER = "ritualReaderState";
 		public static final String ITEMS = "Items";
 		public static final String SLOT = "Slot";
+		public static final String CUSTOM_NAME = "CustomName";
 
 		public static final String ALTAR = "bloodAltar";
 		public static final String ALTAR_TIER = "upgradeLevel";

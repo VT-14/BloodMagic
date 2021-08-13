@@ -1,6 +1,7 @@
 package wayoftime.bloodmagic.common.item;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
@@ -14,6 +15,13 @@ import wayoftime.bloodmagic.core.data.Binding;
 
 public class ItemTelepositionFocus extends ItemBindableBase
 {
+	private final Supplier<TeleposerFocus> sup;
+
+	public ItemTelepositionFocus(Supplier<TeleposerFocus> sup)
+	{
+		this.sup = sup;
+	}
+
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public void addInformation(ItemStack stack, World world, List<ITextComponent> tooltip, ITooltipFlag flag)

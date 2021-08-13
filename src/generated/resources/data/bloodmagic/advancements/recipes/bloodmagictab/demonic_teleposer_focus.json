@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "bloodmagic:demonic_teleposer_focus"
+    ]
+  },
+  "criteria": {
+    "has_enhanced_focus": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "bloodmagic:enhancedteleposerfocus"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "bloodmagic:demonic_teleposer_focus"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_enhanced_focus",
+      "has_the_recipe"
+    ]
+  ]
+}

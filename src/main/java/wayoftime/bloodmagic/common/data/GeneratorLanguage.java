@@ -481,6 +481,10 @@ public class GeneratorLanguage extends LanguageProvider
 		addItem(BloodMagicItems.APPRENTICE_BLOOD_ORB, "Apprentice Blood Orb");
 		addItem(BloodMagicItems.MAGICIAN_BLOOD_ORB, "Magician Blood Orb");
 		addItem(BloodMagicItems.MASTER_BLOOD_ORB, "Master Blood Orb");
+		addItem(BloodMagicItems.WEAK_TELEPOSER_FOCUS, "Teleposition Focus");
+		addItem(BloodMagicItems.ENHANCED_TELEPOSER_FOCUS, "Enhanced Teleposition Focus");
+		addItem(BloodMagicItems.REINFORCED_TELEPOSER_FOCUS, "Reinforced Teleposition Focus");
+		addItem(BloodMagicItems.DEMONIC_TELEPOSER_FOCUS, "Demonic Teleposition Focus");
 		addItem(BloodMagicItems.DIVINATION_SIGIL, "Divination Sigil");
 		addItem(BloodMagicItems.WATER_SIGIL, "Water Sigil");
 		addItem(BloodMagicItems.LAVA_SIGIL, "Lava Sigil");
@@ -547,8 +551,6 @@ public class GeneratorLanguage extends LanguageProvider
 		addItem(BloodMagicItems.BASE_RITUAL_DIVINER, "Ritual Diviner");
 		addItem(BloodMagicItems.DUSK_RITUAL_DIVINER, "Ritual Diviner [Dusk]");
 		addItem(BloodMagicItems.RITUAL_READER, "Ritual Tinkerer");
-
-		addItem(BloodMagicItems.TELEPOSITION_FOCUS, "Teleposition Focus");
 
 		addItem(BloodMagicItems.WEAK_BLOOD_SHARD, "Weak Blood Shard");
 		addItem(BloodMagicItems.RAW_CRYSTAL, "Demon Will Crystal");

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "bbb",
+    "btb",
+    "bbb"
+  ],
+  "key": {
+    "b": {
+      "item": "bloodmagic:weakbloodshard"
+    },
+    "t": {
+      "item": "bloodmagic:reinforcedteleposerfocus"
+    }
+  },
+  "result": {
+    "item": "bloodmagic:demonicteleposerfocus"
+  }
+}

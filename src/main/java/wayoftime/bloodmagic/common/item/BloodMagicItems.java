@@ -34,6 +34,8 @@ import wayoftime.bloodmagic.common.item.soul.ItemSoulGem;
 import wayoftime.bloodmagic.common.item.soul.ItemSoulSnare;
 import wayoftime.bloodmagic.common.registration.impl.BloodOrbDeferredRegister;
 import wayoftime.bloodmagic.common.registration.impl.BloodOrbRegistryObject;
+import wayoftime.bloodmagic.common.registration.impl.TeleposerFocusDeferredRegister;
+import wayoftime.bloodmagic.common.registration.impl.TeleposerFocusRegistryObject;
 import wayoftime.bloodmagic.ritual.EnumRuneType;
 import wayoftime.bloodmagic.structures.ItemDungeonTester;
 
@@ -42,6 +44,7 @@ public class BloodMagicItems
 //	public static Item.ToolMaterial SOUL_TOOL_MATERIAL = EnumHelper.addToolMaterial("demonic", 4, 520, 7, 8, 50);
 //	public static final BloodOrb WEAK_ORB_INSTANCE = new BloodOrb(new ResourceLocation(BloodMagic.MODID, "weakbloodorb"), 0, 5000, 10);
 	public static final BloodOrbDeferredRegister BLOOD_ORBS = new BloodOrbDeferredRegister(BloodMagic.MODID);
+	public static final TeleposerFocusDeferredRegister TELEPOSER_FOCI = new TeleposerFocusDeferredRegister(BloodMagic.MODID);
 	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, BloodMagic.MODID);
 	public static final DeferredRegister<Item> BASICITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, BloodMagic.MODID);
 
@@ -51,6 +54,11 @@ public class BloodMagicItems
 	public static final BloodOrbRegistryObject<BloodOrb> ORB_MASTER = BLOOD_ORBS.register("masterbloodorb", () -> new BloodOrb(new ResourceLocation(BloodMagic.MODID, "masterbloodorb"), 4, 1000000, 25));
 	public static final BloodOrbRegistryObject<BloodOrb> ORB_ARCHMAGE = BLOOD_ORBS.register("archmagebloodorb", () -> new BloodOrb(new ResourceLocation(BloodMagic.MODID, "archmagebloodorb"), 5, 10000000, 50));
 //	public static final DeferredRegister<BloodOrb> BLOOD_ORBS = DeferredRegister.create(RegistrarBloodMagic.BLOOD_ORBS, BloodMagic.MODID);
+
+	public static final TeleposerFocusRegistryObject<TeleposerFocus> TELEPOSER_FOCUS_WEAK = TELEPOSER_FOCI.register("teleposerfocus", () -> new TeleposerFocus(new ResourceLocation(BloodMagic.MODID, "teleposerfocus"), 0));
+	public static final TeleposerFocusRegistryObject<TeleposerFocus> TELEPOSER_FOCUS_ENHANCED = TELEPOSER_FOCI.register("enhancedteleposerfocus", () -> new TeleposerFocus(new ResourceLocation(BloodMagic.MODID, "enhancedteleposerfocus"), 1));
+	public static final TeleposerFocusRegistryObject<TeleposerFocus> TELEPOSER_FOCUS_REINFORCED = TELEPOSER_FOCI.register("reinforcedteleposerfocus", () -> new TeleposerFocus(new ResourceLocation(BloodMagic.MODID, "reinforcedteleposerfocus"), 2));
+	public static final TeleposerFocusRegistryObject<TeleposerFocus> TELEPOSER_FOCUS_DEMONIC = TELEPOSER_FOCI.register("demonicteleposerfocus", () -> new TeleposerFocus(new ResourceLocation(BloodMagic.MODID, "demonicteleposerfocus"), 3));
 
 //	public static final RegistryObject<Item> BLOODSTONE_ITEM = ITEMS.register("ruby_block", () -> new BlockItem(BloodMagicBlocks.BLOODSTONE.get(), new Item.Properties().group(BloodMagic.TAB)));
 	public static final RegistryObject<Item> SOUL_FORGE_ITEM = ITEMS.register("soulforge", () -> new BlockItem(BloodMagicBlocks.SOUL_FORGE.get(), new Item.Properties().group(BloodMagic.TAB)));
@@ -115,6 +123,11 @@ public class BloodMagicItems
 	public static final RegistryObject<Item> MAGICIAN_BLOOD_ORB = BASICITEMS.register("magicianbloodorb", () -> new ItemBloodOrb(ORB_MAGICIAN));
 	public static final RegistryObject<Item> MASTER_BLOOD_ORB = BASICITEMS.register("masterbloodorb", () -> new ItemBloodOrb(ORB_MASTER));
 
+	public static final RegistryObject<Item> WEAK_TELEPOSER_FOCUS = BASICITEMS.register("teleposerfocus", () -> new ItemTelepositionFocus(TELEPOSER_FOCUS_WEAK));
+	public static final RegistryObject<Item> ENHANCED_TELEPOSER_FOCUS = BASICITEMS.register("enhancedteleposerfocus", () -> new ItemTelepositionFocus(TELEPOSER_FOCUS_ENHANCED));
+	public static final RegistryObject<Item> REINFORCED_TELEPOSER_FOCUS = BASICITEMS.register("reinforcedteleposerfocus", () -> new ItemTelepositionFocus(TELEPOSER_FOCUS_REINFORCED));
+	public static final RegistryObject<Item> DEMONIC_TELEPOSER_FOCUS = BASICITEMS.register("demonicteleposerfocus", () -> new ItemTelepositionFocus(TELEPOSER_FOCUS_DEMONIC));
+
 	public static final RegistryObject<Item> DIVINATION_SIGIL = BASICITEMS.register("divinationsigil", () -> new ItemSigilDivination(true));
 	public static final RegistryObject<Item> SEER_SIGIL = BASICITEMS.register("seersigil", () -> new ItemSigilDivination(false));
 	public static final RegistryObject<Item> SACRIFICIAL_DAGGER = BASICITEMS.register("sacrificialdagger", () -> new ItemSacrificialDagger());
@@ -146,8 +159,6 @@ public class BloodMagicItems
 	public static final RegistryObject<Item> LIVING_BOOTS = BASICITEMS.register("livingboots", () -> new ItemLivingArmor(EquipmentSlotType.FEET));
 
 	public static final RegistryObject<Item> LIVING_TOME = BASICITEMS.register("upgradetome", () -> new ItemLivingTome());
-
-	public static final RegistryObject<Item> TELEPOSITION_FOCUS = BASICITEMS.register("teleposerfocus", () -> new ItemTelepositionFocus());
 
 	// Ritual stuffs
 	public static final RegistryObject<Item> WEAK_ACTIVATION_CRYSTAL = BASICITEMS.register("activationcrystalweak", () -> new ItemActivationCrystal(ItemActivationCrystal.CrystalType.WEAK));

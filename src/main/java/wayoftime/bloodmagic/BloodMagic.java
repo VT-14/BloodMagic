@@ -110,6 +110,7 @@ public class BloodMagic
 		BloodMagicItems.ITEMS.register(modBus);
 //		RegistrarBloodMagic.BLOOD_ORBS.createAndRegister(modBus, "bloodorbs");
 		BloodMagicItems.BLOOD_ORBS.createAndRegister(modBus, "bloodorbs");
+		BloodMagicItems.TELEPOSER_FOCI.createAndRegister(modBus, "teleposerfoci");
 		LivingArmorRegistrar.UPGRADES.createAndRegister(modBus, "upgrades");
 		AnointmentRegistrar.ANOINTMENTS.createAndRegister(modBus, "anointments");
 		BloodMagicItems.BASICITEMS.register(modBus);

@@ -1,9 +1,4 @@
 Teleposer Port Notes:
 	ToDo:
-		* Get Data on Focus
 		* Teleportation
 		* Teleposer Sigil
-	Bugs:
-		Renaming:
-			* Not renamed Teleposers lose display name on reload
-			* Name not kept when broken.

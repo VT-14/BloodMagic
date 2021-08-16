@@ -1,19 +1,21 @@
 package wayoftime.bloodmagic.tile;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.INameable;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.registries.ObjectHolder;
 import wayoftime.bloodmagic.tile.container.ContainerTeleposer;
 import wayoftime.bloodmagic.util.Constants;
 
-public class TileTeleposer extends TileInventory implements INamedContainerProvider
+public class TileTeleposer extends TileInventory implements INamedContainerProvider, INameable
 {
 	@ObjectHolder("bloodmagic:teleposer")
 	public static TileEntityType<TileTeleposer> TYPE;
@@ -33,18 +35,19 @@ public class TileTeleposer extends TileInventory implements INamedContainerProvi
 	public void deserialize(CompoundNBT tag)
 	{
 		super.deserialize(tag);
-
-		customName = new StringTextComponent(tag.getString(Constants.NBT.CUSTOM_NAME));
+		if (tag.contains(Constants.NBT.CUSTOM_NAME))
+		{
+			customName = ITextComponent.Serializer.getComponentFromJson(tag.getString(Constants.NBT.CUSTOM_NAME));
+		}
 	}
 
 	@Override
 	public CompoundNBT serialize(CompoundNBT tag)
 	{
 		super.serialize(tag);
-
 		if (customName != null)
 		{
-			tag.putString(Constants.NBT.CUSTOM_NAME, customName.getString());
+			tag.putString(Constants.NBT.CUSTOM_NAME, ITextComponent.Serializer.toJson(customName));
 		}
 		return tag;
 	}
@@ -65,5 +68,18 @@ public class TileTeleposer extends TileInventory implements INamedContainerProvi
 	public ITextComponent getDisplayName()
 	{
 		return this.customName != null ? this.customName : new TranslationTextComponent("block.bloodmagic.teleposer");
+	}
+
+	@Override
+	public ITextComponent getName()
+	{
+		return getDisplayName();
+	}
+
+	@Override
+	@Nullable
+	public ITextComponent getCustomName()
+	{
+		return customName;
 	}
 }

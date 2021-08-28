@@ -60,18 +60,18 @@ public class ItemTelepositionFocus extends ItemBindableBase
 		Binding binding = getBinding(stack);
 		if (binding != null)
 			tooltip.add(new TranslationTextComponent("tooltip.bloodmagic.currentOwner", binding.getOwnerName()).mergeStyle(TextFormatting.GRAY));
-		CompoundNBT nbt = stack.getTag();
-		if (nbt.contains(Constants.NBT.X_COORD)) // Has coordinates set.
+		BlockPos pos = getBlockPos(stack);
+		CompoundNBT nbt = getNBT(stack);
+		String dimensionID = nbt.getString(Constants.NBT.DIMENSION_ID);
+		if (dimensionID.startsWith("minecraft:"))
 		{
-			int x = nbt.getInt(Constants.NBT.X_COORD);
-			int y = nbt.getInt(Constants.NBT.Y_COORD);
-			int z = nbt.getInt(Constants.NBT.Z_COORD);
-
-			// TODO: translations!
-			tooltip.add(new TranslationTextComponent("Name: %s", nbt.getString(Constants.NBT.CUSTOM_NAME)).mergeStyle(TextFormatting.GRAY));
-			tooltip.add(new TranslationTextComponent("Coordinates: %s, %s, %s", x, y, z).mergeStyle(TextFormatting.GRAY));
-			tooltip.add(new TranslationTextComponent("Dimension: %s", nbt.getString(Constants.NBT.DIMENSION_ID)).mergeStyle(TextFormatting.GRAY));
+			dimensionID = dimensionID.substring(10); // remove "minecraft:" from displayed text.
 		}
+
+		// TODO: translations!
+		tooltip.add(new TranslationTextComponent("Name: %s", nbt.getString(Constants.NBT.CUSTOM_NAME)).mergeStyle(TextFormatting.GRAY));
+		tooltip.add(new TranslationTextComponent("Coordinates: %s, %s, %s", pos.getX(), pos.getY(), pos.getZ()).mergeStyle(TextFormatting.GRAY));
+		tooltip.add(new TranslationTextComponent("Dimension: %s", dimensionID).mergeStyle(TextFormatting.GRAY));
 	}
 
 	public ItemStack setBlockPos(ItemStack stack, World world, BlockPos pos)
@@ -79,21 +79,39 @@ public class ItemTelepositionFocus extends ItemBindableBase
 		TileEntity tile = world.getTileEntity(pos);
 		if (tile instanceof TileTeleposer)
 		{
-			stack = NBTHelper.checkNBT(stack);
-			CompoundNBT nbt = stack.getTag();
+			CompoundNBT nbt = getNBT(stack);
 			nbt.putInt(Constants.NBT.X_COORD, pos.getX());
 			nbt.putInt(Constants.NBT.Y_COORD, pos.getY());
 			nbt.putInt(Constants.NBT.Z_COORD, pos.getZ());
 			nbt.putString(Constants.NBT.CUSTOM_NAME, ((TileTeleposer) tile).getDisplayName().getString());
 			ResourceLocation dimensionRL = world.getDimensionKey().getLocation();
-			if (dimensionRL.getNamespace() == "minecraft") // Exclude "minecraft:" from vanilla dimensions.
-			{
-				nbt.putString(Constants.NBT.DIMENSION_ID, dimensionRL.getPath().toString());
-			} else
-			{
-				nbt.putString(Constants.NBT.DIMENSION_ID, dimensionRL.toString());
-			}
+			nbt.putString(Constants.NBT.DIMENSION_ID, dimensionRL.toString());
 		}
 		return stack;
+	}
+
+	public BlockPos getBlockPos(ItemStack stack)
+	{
+		CompoundNBT nbt = getNBT(stack);
+		if (nbt.contains(Constants.NBT.X_COORD) && nbt.contains(Constants.NBT.Y_COORD) && nbt.contains(Constants.NBT.Z_COORD))
+		{
+			return new BlockPos(nbt.getInt(Constants.NBT.X_COORD), nbt.getInt(Constants.NBT.Y_COORD), nbt.getInt(Constants.NBT.Z_COORD));
+		} else
+			return null;
+	}
+
+	public World getWorld(ItemStack stack)
+	{
+		CompoundNBT nbt = getNBT(stack);
+		String dimesionID = nbt.getString(Constants.NBT.DIMENSION_ID);
+		ResourceLocation dimensionRL = ResourceLocation.tryCreate(dimesionID);
+		World test;
+		return null;
+	}
+
+	public CompoundNBT getNBT(ItemStack stack)
+	{
+		stack = NBTHelper.checkNBT(stack);
+		return stack.getTag();
 	}
 }

@@ -10,14 +10,17 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceContext.FluidMode;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import wayoftime.bloodmagic.core.data.Binding;
@@ -100,13 +103,23 @@ public class ItemTelepositionFocus extends ItemBindableBase
 			return null;
 	}
 
-	public World getWorld(ItemStack stack)
+	public World getWorld(ItemStack stack, World referenceWorld)
 	{
-		CompoundNBT nbt = getNBT(stack);
-		String dimesionID = nbt.getString(Constants.NBT.DIMENSION_ID);
-		ResourceLocation dimensionRL = ResourceLocation.tryCreate(dimesionID);
-		World test;
-		return null;
+		if (!referenceWorld.isRemote())
+		{
+			CompoundNBT nbt = getNBT(stack);
+			String dimesionID = nbt.getString(Constants.NBT.DIMENSION_ID);
+			ResourceLocation dimensionResourceLocation = ResourceLocation.tryCreate(dimesionID);
+			RegistryKey<World> dimensionRegistryKey = RegistryKey.getOrCreateKey(Registry.WORLD_KEY, dimensionResourceLocation);
+			ServerWorld dimensionServerWorld = referenceWorld.getServer().getWorld(dimensionRegistryKey);
+			return dimensionServerWorld;
+		} else
+			return null;
+	}
+
+	public int getRange()
+	{
+		return sup.get().getRange();
 	}
 
 	public CompoundNBT getNBT(ItemStack stack)

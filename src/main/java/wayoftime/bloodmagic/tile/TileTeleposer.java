@@ -9,6 +9,7 @@ import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.INameable;
 import net.minecraft.util.math.BlockPos;
@@ -131,7 +132,7 @@ public class TileTeleposer extends TileInventory implements INamedContainerProvi
 
 	private void initiateTeleport()
 	{
-		if (!getWorld().isRemote && canInitiateTeleport() && this.getBlockState().getBlock() instanceof BlockTeleposer)
+		if (!world.isRemote && canInitiateTeleport() && this.getBlockState().getBlock() instanceof BlockTeleposer)
 		{
 			ItemStack focusStack = getStackInSlot(0);
 			ItemTelepositionFocus focus = (ItemTelepositionFocus) focusStack.getItem();
@@ -139,15 +140,19 @@ public class TileTeleposer extends TileInventory implements INamedContainerProvi
 			if (binding == null)
 				return;
 			BlockPos focusPos = focus.getBlockPos(focusStack);
-			World world = focus.getWorld(focusStack);
-			if (world == null || focusPos == null)
+			World focusWorld = focus.getWorld(focusStack, world); // world = Tile Entity's world.
+			if (focusWorld == null)
 				return;
 
+			TileEntity boundTile = focusWorld.getTileEntity(focusPos);
+			if (boundTile instanceof TileTeleposer && boundTile != this)
+			{
+				final int focusRange = ((ItemTelepositionFocus) focusStack.getItem()).getRange();
+				final int lpToBeDrained = (int) (0.5F * Math.sqrt((pos.getX() - focusPos.getX()) * (pos.getX() - focusPos.getX()) + (pos.getY() - focusPos.getY() + 1) * (pos.getY() - focusPos.getY() + 1) + (pos.getZ() - focusPos.getZ()) * (pos.getZ() - focusPos.getZ())));
+
+			}
 		}
 
-//            World focusWorld = focus.getWorld(focusStack);
-//            if (focusWorld == null)
-//                return;
 //
 //            TileEntity boundTile = focusWorld.getTileEntity(focusPos);
 //            if (boundTile instanceof TileTeleposer && boundTile != this) {

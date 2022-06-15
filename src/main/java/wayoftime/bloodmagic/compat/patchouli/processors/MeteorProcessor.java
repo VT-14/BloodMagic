@@ -1,7 +1,10 @@
 package wayoftime.bloodmagic.compat.patchouli.processors;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -35,10 +38,12 @@ public class MeteorProcessor implements IComponentProcessor
 {
 	private World world = Minecraft.getInstance().world;
 	private RecipeMeteor meteor; // The Meteor's "Recipe."
-	private String extraText = ""; // (Optional) Text to insert at the end of the entry.
-	List<MeteorLayer> layerList;
-	private int[] layerYValue; // index is the layer. Value is spacing needed between layers.
+	private List<List<Pair<Block, Integer>>> layers = new ArrayList<List<Pair<Block, Integer>>>();
+	private List<Integer> layerTotalWeights = new ArrayList<Integer>();
+	private int[] layerYSpace; // returns the needed height for the indexed layer. Used to determine how much
+								// space the next layer needs.
 	private final int ITEMSPERROW = 6;
+	private final int ROWHEIGHT = 32;
 
 	@Override
 	public void setup(IVariableProvider variables)
@@ -52,27 +57,47 @@ public class MeteorProcessor implements IComponentProcessor
 			{
 				this.meteor = (RecipeMeteor) recipe;
 
-				layerList = this.meteor.getLayerList();
-				this.layerYValue = new int[layerList.size()];
-
-				for (int i : layerYValue)
+				for (MeteorLayer layer : this.meteor.getLayerList())
 				{
-					MeteorLayer layer = layerList.get(i);
-					int blockTypeCount = layer.weightList.size();
-					layerYValue[i] = (((blockTypeCount / ITEMSPERROW) + 1) * 18) + 18;
+					int cumulativeWeight = 0;
+					List<Pair<Block, Integer>> blocks = new ArrayList<Pair<Block, Integer>>();
+					RandomBlockContainer shellBlockRBC = layer.shellBlock;
+					if (shellBlockRBC != null)
+						blocks.add(Pair.of(shellBlockRBC.getRandomBlock(world.rand, world), -2));
+					Block fillBlock = layer.fillBlock.getRandomBlock(world.rand, world);
+					if (fillBlock != null)
+						blocks.add(Pair.of(fillBlock, -1));
+					for (Pair<RandomBlockContainer, Integer> blockWeight : layer.weightList)
+					{
+						Block block = blockWeight.getLeft().getRandomBlock(world.rand, world);
+						if (block != null)
+						{
+							int weight = blockWeight.getRight();
+							blocks.add(Pair.of(block, weight));
+							cumulativeWeight += weight;
+						}
+					}
+					this.layers.add(blocks);
+					this.layerTotalWeights.add(cumulativeWeight);
+				}
+
+				layerYSpace = new int[layers.size()];
+				int cumulativeSpace = 0;
+				for (int i = 0; i < layers.size(); i++)
+				{
+					List<Pair<Block, Integer>> layer = layers.get(i);
+					int blockTypeCount = layer.size();
+					layerYSpace[i] = (((blockTypeCount / this.ITEMSPERROW) + 1) * this.ROWHEIGHT) + 18 + cumulativeSpace;
+					// # of rows * row height + static offset for header and spacing.
+					cumulativeSpace = layerYSpace[i];
 				}
 			}
 		}
 		if (this.meteor == null)
+
 		{
 			LogManager.getLogger().warn("Guidebook missing Meteor recipe {}", id);
 		}
-
-		if (variables.has("text"))
-		{
-			extraText = variables.get("text").asString();
-		}
-
 	}
 
 	@Override
@@ -81,41 +106,88 @@ public class MeteorProcessor implements IComponentProcessor
 		if (this.meteor == null)
 		{
 			return null;
-		} else if (key.startsWith("item,")) // item,0,1,2 -> Layer 0, Row 1, Column 2.
+
+		} else if (key.startsWith("weight")) // weight0,1 -> layer 0, index 1 (2nd block)
+		{
+			int layerNo = Integer.parseInt(key.substring(6, 7));
+			if (layerNo >= this.layers.size())
+				return null;
+
+			float output;
+			int index = Integer.parseInt(key.substring(8));
+			if (index >= this.layers.get(layerNo).size())
+				return null;
+			else
+			{
+				int layerTotalWeight = Math.max(this.layerTotalWeights.get(layerNo), this.meteor.getLayerList().get(layerNo).minWeight);
+				int blockWeight = this.layers.get(layerNo).get(index).getRight() * 100;
+				if (blockWeight == -200) // Shell
+					return IVariable.wrap("Shell"); // TODO Translate Shell.
+				else if (blockWeight == -100) // Fill
+				{
+					return IVariable.wrap("Fill");
+				} else
+					output = (float) blockWeight / (float) layerTotalWeight;
+			}
+			if (output >= 100)
+				return IVariable.wrap("100%");
+			else
+				return IVariable.wrap(String.format("%2.1f%%", output));
+
+		} else if (key.startsWith("block")) // block0,1 -> layer 0, index 1 (2nd block)
 		{
 			int layerNo = Integer.parseInt(key.substring(5, 6));
-			if (layerNo >= layerList.size())
+			if (layerNo >= this.layers.size())
 				return null;
-			MeteorLayer layer = layerList.get(layerNo);
-			int index = (Integer.parseInt(key.substring(7, 8)) * ITEMSPERROW) + Integer.parseInt(key.substring(9, 10));
-			if (index >= layer.weightList.size())
+			List<Pair<Block, Integer>> layer = this.layers.get(layerNo);
+
+			int index = Integer.parseInt(key.substring(7));
+			if (index >= layer.size())
 				return null;
+			return IVariable.from(new ItemStack(layer.get(index).getLeft()));
 
-			List<Pair<RandomBlockContainer, Integer>> weightList = layer.weightList;
-			Say(weightList.toString());
-			Pair<RandomBlockContainer, Integer> pair = weightList.get(index);
-			Say(pair.toString());
-			RandomBlockContainer rbc = pair.getKey();
-			Say(rbc.toString());
-			Block block = rbc.getRandomBlock(world.rand, world);
-			// Say(block.toString());
-			ItemStack itemStack = new ItemStack(block);
-			Say(itemStack.toString());
-			return IVariable.from(itemStack);
-
-			// TO-DO: Skip "air" entries. Will probably need to handle in setup().
-
-		} else if (key.startsWith("Y,")) // Y,0,1 -> Layer 0, Row 1.
+		} else if (key.startsWith("y")) // y1,1 -> Layer 1, Row 1. Layer 0 is hard-coded in template (starts at 0).
 		{
-			return null;
-		} else
+			int prevLayer = Integer.parseInt(key.substring(1, 2)) - 1; // Layer 1 needs Layer 0's height.
+			int row = Integer.parseInt(key.substring(3));
+			return IVariable.wrap(layerYSpace[prevLayer] + (row * this.ROWHEIGHT));
+
+		} else if (key.startsWith("radius")) // radius0 -> radius of layer 0.
 		{
+			int layerNo = Integer.parseInt(key.substring(6));
+			if (layerNo >= this.layers.size())
+				return null;
+			return IVariable.wrap(this.meteor.getLayerList().get(layerNo).layerRadius);
+
+		} else if (key.startsWith("rowLength")) // rowLength0,1 -> Layer 0, Row 1 (2nd row)
+		{ // It appears that the Template needs a Number, the variable call is a String,
+			// so it quits before getting here.
+			int output = 0; // 0 is blank. 32 is 1 box. 64 is 2 boxes. etc.
+			int layerNo = Integer.parseInt(key.substring(10, 11));
+			if (layerNo < this.layers.size())
+			{
+				List<Pair<Block, Integer>> layer = this.layers.get(layerNo);
+				int rowNo = Integer.parseInt(key.substring(12));
+				int divValue = layer.size() / this.ITEMSPERROW;
+				int modValue = layer.size() % this.ITEMSPERROW;
+				if (divValue == rowNo && modValue != 0)
+					output = modValue * 32;
+				else if (divValue == rowNo + 1 && modValue == 0)
+					output = 192; // 6 * 32.
+			}
+			return IVariable.wrap(output);
+		}
+
+		switch (key)
+		{
+		case "input":
+			return IVariable.wrapList(Arrays.stream(this.meteor.getInput().getMatchingStacks()).map(IVariable::from).collect(Collectors.toList()));
+		case "syphon":
+			return (IVariable.wrap(String.format("%,d", this.meteor.getSyphon())));
+		case "textY":
+			return IVariable.wrap(this.layerYSpace[this.layerYSpace.length - 1]);
+		default:
 			return null;
 		}
-	}
-
-	private void Say(String str)
-	{
-		System.out.println(String.format("VT Test: %s", str));
 	}
 }

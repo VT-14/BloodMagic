@@ -18,8 +18,29 @@
       "text": "TODO: automatic(?) entries for meteors, with support for custom meteors added by other mods / modpack makers / etc."
     },
     {
+      "type": "text",
+      "text": "Intentionally left blank for testing purposes."
+    },
+    {
       "type": "bloodmagic:meteor",
-      "recipe": "bloodmagic:meteor/iron"
+      "recipe": "bloodmagic:meteor/iron",
+      "heading": "Iron",
+      "text": "Test text"
+    },
+    {
+      "type": "bloodmagic:meteor",
+      "recipe": "bloodmagic:meteor/diamond",
+      "heading": "Diamond"
+    },
+    {
+      "type": "bloodmagic:meteor",
+      "recipe": "bloodmagic:meteor/nether",
+      "heading": "Nether"
+    },
+    {
+      "type": "bloodmagic:meteor",
+      "recipe": "bloodmagic:meteor/stone",
+      "heading": "Stone"
     }
   ]
 }

@@ -16,6 +16,10 @@
     {
       "type": "text",
       "text": "TODO: automatic(?) entries for meteors, with support for custom meteors added by other mods / modpack makers / etc."
+    },
+    {
+      "type": "bloodmagic:meteor",
+      "recipe": "bloodmagic:meteor/iron"
     }
   ]
 }

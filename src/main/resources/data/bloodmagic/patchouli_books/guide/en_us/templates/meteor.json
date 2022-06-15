@@ -1,0 +1,17 @@
+{
+  "processor": "wayoftime.bloodmagic.compat.patchouli.processors.MeteorProcessor",
+  "components": [
+    {
+      "type": "header",
+      "text": "#heading",
+      "x": -1,
+      "y": 0
+    },
+    {
+      "type": "item",
+      "item": "#item,0,0,5",
+      "x": 50,
+      "y": 15
+    }
+  ]
+}

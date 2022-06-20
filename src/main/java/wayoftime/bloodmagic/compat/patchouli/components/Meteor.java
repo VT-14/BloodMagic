@@ -18,6 +18,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import vazkii.patchouli.api.IComponentRenderContext;
 import vazkii.patchouli.api.ICustomComponent;
@@ -89,7 +91,7 @@ public class Meteor implements ICustomComponent
 				for (Pair<RandomBlockContainer, Integer> pair : layer.weightList)
 				{ // remove empty entries for this Instance, convert to a list of ItemStacks, and
 					// sum used Weights.
-					List<Block> blockList = pair.getLeft().getAllBlocks();
+					List<Block> blockList = pair.getLeft().getAllBlocks(); // this is crashing on servers.
 					if (blockList != null)
 					{
 						cellsNeeded++;
@@ -133,7 +135,7 @@ public class Meteor implements ICustomComponent
 					else if (weight == 10000)
 						outputWeight = "100%";
 					else
-						outputWeight = String.format("%2.1f%%", (float) weight / 100);
+						outputWeight = String.format("%4.1f%%", (float) weight / 100);
 
 					layerOutputList.add(Pair.of(layerWeightList.get(i).getLeft(), outputWeight));
 				}
@@ -157,29 +159,34 @@ public class Meteor implements ICustomComponent
 	{
 		if (recipeMeteor != null)
 		{
-			// TODO: Radius? Texture Alpha. Text Scale.
+			// TODO: Texture Alpha.
 
 			int y = -10;
 			int x = 2;
 			FontRenderer font = mc.fontRenderer;
+			ITextComponent textRender;
 
 			context.renderIngredient(ms, 2, 2, mouseX, mouseY, this.input);
 			mc.textureManager.bindTexture(new ResourceLocation(BloodMagic.MODID, "textures/gui/patchouli_book/crafting.png"));
 			AbstractGui.blit(ms, -1, -1, 71, 15, 22, 22, 128, 256);
-			font.drawString(ms, "Syphon: " + TextHelper.localize("guide.patchouli.bloodmagic.meteor.syphon", syphon), 21, 10, 0); // TODO:
-																																	// Translate
 
-			mc.textureManager.bindTexture(METEORBOXESTEXTURE);
-			for (List<Integer> rowSizes : this.layerRowSizes)
+			textRender = new StringTextComponent(TextHelper.localize("guide.patchouli.bloodmagic.meteor.syphon", syphon)).mergeStyle(context.getFont());
+			font.func_238422_b_(ms, textRender.func_241878_f(), 22, 10, 0);
+
+			for (int i = 0; i < this.layerRowSizes.size(); i++)
 			{
-				for (int i : rowSizes)
+				textRender = new StringTextComponent(TextHelper.localize("guide.patchouli.bloodmagic.meteor.radius", layerRadius.get(i))).mergeStyle(context.getFont());
+				font.func_238422_b_(ms, textRender.func_241878_f(), 0, y + 31, 0);
+				y += 7;
+				for (int j : this.layerRowSizes.get(i))
 				{
-					rowBlit(ms, y += ROWHEIGHT, i);
+					rowBlit(ms, y += ROWHEIGHT, j);
 				}
 			}
-			y = -6;
+			y = -7;
 			for (List<Pair<List<ItemStack>, String>> outputPair : outputList)
 			{
+				y += 7;
 				for (int i = 0; i < outputPair.size(); i++)
 				{
 					if (i % ITEMSPERROW == 0)
@@ -188,8 +195,13 @@ public class Meteor implements ICustomComponent
 						y += ROWHEIGHT;
 					}
 					Pair<List<ItemStack>, String> output = outputPair.get(i);
-					context.renderItemStack(ms, x += 19, y, mouseX, mouseY, output.getLeft().get(context.getTicksInBook() / 20 % output.getLeft().size()));
-					font.drawString(ms, output.getRight(), x, y + 19, 0);
+					context.renderItemStack(ms, x += 19, y + 1, mouseX, mouseY, output.getLeft().get(context.getTicksInBook() / 20 % output.getLeft().size()));
+					String text = output.getRight();
+					textRender = new StringTextComponent(text).mergeStyle(context.getFont());
+					if (text.equals("100%"))
+						font.func_238422_b_(ms, textRender.func_241878_f(), (float) (x + 1.5), y + 18, 0);
+					else
+						font.func_238422_b_(ms, textRender.func_241878_f(), (float) (x - 0.5), y + 18, 0);
 				}
 			}
 
@@ -205,6 +217,7 @@ public class Meteor implements ICustomComponent
 
 	private void rowBlit(MatrixStack ms, int x, int y, int blocks)
 	{
+		mc.textureManager.bindTexture(METEORBOXESTEXTURE);
 		AbstractGui.blit(ms, x, y, 0, blocks * 32, 128, 32, 128, 256);
 	}
 

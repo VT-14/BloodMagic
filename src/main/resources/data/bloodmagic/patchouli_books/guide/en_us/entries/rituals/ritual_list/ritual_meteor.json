@@ -15,11 +15,7 @@
     },
     {
       "type": "text",
-      "text": "TODO: automatic(?) entries for meteors, with support for custom meteors added by other mods / modpack makers / etc."
-    },
-    {
-      "type": "text",
-      "text": "Intentionally left blank for testing purposes."
+      "text": "TODO: Polish the recipe auto-documentation so it's actually useable, and looks good."
     },
     {
       "type": "bloodmagic:meteor",

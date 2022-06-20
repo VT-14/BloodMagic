@@ -1,5 +1,4 @@
 {
-  "processor": "wayoftime.bloodmagic.compat.patchouli.processors.MeteorProcessor",
   "components": [
     {
       "type": "header",
@@ -8,112 +7,8 @@
       "y": 0
     },
     {
-      "type": "image",
-      "image": "bloodmagic:textures/gui/patchouli_book/crafting.png",
-      "x": -2,
-      "y": -2,
-      "u": 70,
-      "v": 13,
-      "texture_width": 128,
-      "texture_height": 256,
-      "width": 24,
-      "height": 24
-    },
-    {
-      "type": "item",
-      "item": "#input",
-      "x": 2,
-      "y": 3
-    },
-    {
-      "type": "text",
-      "text": "Syphon: #syphon# LP",
-      "x": 22,
-      "y": 12
-    },
-    {
-      "type": "image",
-      "image": "bloodmagic:textures/gui/patchouli_book/meteor_grids.png",
-      "x": -2,
-      "y": 24,
-      "u": 0,
-      "v": "#rowLength0,0",
-      "texture_width": 128,
-      "texture_height": 256,
-      "width": 119,
-      "height": 32
-    },
-    {
-      "type": "item",
-      "item": "#block0,0",
-      "x": 2,
-      "y": 28
-    },
-    {
-      "type": "text",
-      "text": "#weight0,0",
-      "x": 2,
-      "y": 45
-    },
-    {
-      "type": "item",
-      "item": "#block0,1",
-      "x": 21,
-      "y": 28
-    },
-    {
-      "type": "text",
-      "text": "#weight0,1",
-      "x": 21,
-      "y": 45
-    },
-    {
-      "type": "item",
-      "item": "#block0,2",
-      "x": 40,
-      "y": 28
-    },
-    {
-      "type": "text",
-      "text": "#weight0,2",
-      "x": 40,
-      "y": 45
-    },
-    {
-      "type": "item",
-      "item": "#block0,3",
-      "x": 59,
-      "y": 28
-    },
-    {
-      "type": "text",
-      "text": "#weight0,3",
-      "x": 59,
-      "y": 45
-    },
-    {
-      "type": "item",
-      "item": "#block0,4",
-      "x": 78,
-      "y": 28
-    },
-    {
-      "type": "text",
-      "text": "#weight0,4",
-      "x": 78,
-      "y": 45
-    },
-    {
-      "type": "item",
-      "item": "#block0,5",
-      "x": 97,
-      "y": 28
-    },
-    {
-      "type": "text",
-      "text": "#weight0,5",
-      "x": 97,
-      "y": 45
+      "type": "custom",
+      "class": "wayoftime.bloodmagic.compat.patchouli.components.Meteor"
     }
   ]
 }

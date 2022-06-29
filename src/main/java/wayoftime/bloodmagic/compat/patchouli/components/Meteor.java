@@ -9,6 +9,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -166,13 +167,16 @@ public class Meteor implements ICustomComponent
 			FontRenderer font = mc.fontRenderer;
 			ITextComponent textRender;
 
-			context.renderIngredient(ms, 2, 2, mouseX, mouseY, this.input);
+			context.renderIngredient(ms, 2, -3, mouseX, mouseY, this.input);
+			RenderSystem.enableBlend();
+			RenderSystem.color3f(1F, 1F, 1F);
 			mc.textureManager.bindTexture(new ResourceLocation(BloodMagic.MODID, "textures/gui/patchouli_book/crafting.png"));
-			AbstractGui.blit(ms, -1, -1, 71, 15, 22, 22, 128, 256);
+			AbstractGui.blit(ms, -1, -6, 71, 15, 22, 22, 128, 256);
 
 			textRender = new StringTextComponent(TextHelper.localize("guide.patchouli.bloodmagic.meteor.syphon", syphon)).mergeStyle(context.getFont());
-			font.func_238422_b_(ms, textRender.func_241878_f(), 22, 10, 0);
+			font.func_238422_b_(ms, textRender.func_241878_f(), 23, 7, 0);
 
+			y = -14;
 			for (int i = 0; i < this.layerRowSizes.size(); i++)
 			{
 				textRender = new StringTextComponent(TextHelper.localize("guide.patchouli.bloodmagic.meteor.radius", layerRadius.get(i))).mergeStyle(context.getFont());
@@ -183,7 +187,7 @@ public class Meteor implements ICustomComponent
 					rowBlit(ms, y += ROWHEIGHT, j);
 				}
 			}
-			y = -7;
+			y = -11;
 			for (List<Pair<List<ItemStack>, String>> outputPair : outputList)
 			{
 				y += 7;
@@ -217,6 +221,8 @@ public class Meteor implements ICustomComponent
 
 	private void rowBlit(MatrixStack ms, int x, int y, int blocks)
 	{
+		RenderSystem.enableBlend();
+		RenderSystem.color3f(1F, 1F, 1F);
 		mc.textureManager.bindTexture(METEORBOXESTEXTURE);
 		AbstractGui.blit(ms, x, y, 0, blocks * 32, 128, 32, 128, 256);
 	}

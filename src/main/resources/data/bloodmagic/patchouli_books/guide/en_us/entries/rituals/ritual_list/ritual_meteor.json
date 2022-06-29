@@ -14,10 +14,6 @@
       "ritual": "meteor"
     },
     {
-      "type": "text",
-      "text": "TODO: Polish the recipe auto-documentation so it's actually useable, and looks good."
-    },
-    {
       "type": "bloodmagic:meteor",
       "recipe": "bloodmagic:meteor/iron",
       "heading": "Iron",

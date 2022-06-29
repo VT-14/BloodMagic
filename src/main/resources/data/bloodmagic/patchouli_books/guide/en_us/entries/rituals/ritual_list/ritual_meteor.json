@@ -14,6 +14,10 @@
       "ritual": "meteor"
     },
     {
+      "type": "text",
+      "text": "Using the vast powers at your disposal, the most conclusion is that it is a good idea to summon a meteor from outer space to crash upon the world.$(br2)By dropping an appropriate offering on top of the MRS, the ritual will consume the item (plus a large amount of LP, default of a million LP) and summon a meteor at the build height of the map. Once the meteor hits something, it will detonate and leave behind many resources to mine and process."
+    },
+    {
       "type": "bloodmagic:meteor",
       "recipe": "bloodmagic:meteor/iron",
       "heading": "Iron",

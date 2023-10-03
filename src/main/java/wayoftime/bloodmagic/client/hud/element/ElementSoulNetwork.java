@@ -19,29 +19,28 @@ public class ElementSoulNetwork extends HUDElement
     @Override
     public void draw(GuiGraphics guiGraphics, float partialTicks, int drawX, int drawY)
     {
-        drawX += 4; // Offset X to account for wider HUD Box.
+        int x = drawX + 4; // Offset X to account for wider HUD Box.
+        // HUD Box is wider (and taller) to ensure the currentEssence text doesn't go off the screen.
+
+        guiGraphics.blit(BAR_LOCATION, x, drawY, 0, 78, 28, 70);
 
         Minecraft minecraft = Minecraft.getInstance();
         Player player = minecraft.player;
-
-        guiGraphics.blit(BAR_LOCATION, drawX, drawY, 0, 78, 28, 70);
-
         SoulNetwork soulNetwork = NetworkHelper.getSoulNetwork(player);
-        int maxOrb = NetworkHelper.getCurrentMaxOrb(soulNetwork);
-        int level = soulNetwork.getCurrentEssence();
-        int maxCapacity = NetworkHelper.getMaximumForTier(maxOrb);
-        int fillHeight = 61 * level / maxCapacity; // 60 would have the bar full at exactly 100%.  Set to 61 so the bar
+        int currentEssence = soulNetwork.getCurrentEssence();
+        int fillHeight = 61 * currentEssence / NetworkHelper.getMaximumForTier(NetworkHelper.getCurrentMaxOrb(soulNetwork));
+        // 60 would have the bar full at exactly 100%.  Set to 61 so the bar
         // is full slightly before the Soul Network is completely topped, so rituals don't flash the HUD.
 
-        guiGraphics.blit(BAR_LOCATION, drawX + 8, drawY + 66 - fillHeight, 32, 86 + (58 - fillHeight), 12, fillHeight);
+        guiGraphics.blit(BAR_LOCATION, x + 8, drawY + 66 - fillHeight, 32, 86 + (58 - fillHeight), 12, fillHeight);
 
         if (player.isShiftKeyDown())
         {
             PoseStack poseStack = guiGraphics.pose();
             poseStack.pushPose();
-            poseStack.translate(drawX + 14, drawY + 70, 0);
+            poseStack.translate(x + 14, drawY + 70, 0);
             poseStack.scale(0.5f, 0.5f, 1f);
-            guiGraphics.drawCenteredString(minecraft.font, String.format("%,d LP", level), 0, 2, 0xffffffff);
+            guiGraphics.drawCenteredString(minecraft.font, String.format("%,d LP", currentEssence), 0, 2, 0xffffffff);
             poseStack.popPose();
         }
     }

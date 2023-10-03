@@ -18,6 +18,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import wayoftime.bloodmagic.altar.IBloodAltar;
 import wayoftime.bloodmagic.api.compat.IAltarReader;
+import wayoftime.bloodmagic.api.compat.ISoulNetworkViewer;
 import wayoftime.bloodmagic.client.hud.GuiEditHUD;
 import wayoftime.bloodmagic.common.tile.TileIncenseAltar;
 import wayoftime.bloodmagic.core.data.Binding;
@@ -28,7 +29,7 @@ import wayoftime.bloodmagic.util.helper.PlayerHelper;
 
 import java.util.List;
 
-public class ItemSigilDivination extends ItemSigilBase implements IAltarReader
+public class ItemSigilDivination extends ItemSigilBase implements IAltarReader, ISoulNetworkViewer
 {
 	private final boolean isSimple;
 
@@ -136,4 +137,10 @@ public class ItemSigilDivination extends ItemSigilBase implements IAltarReader
 	{
 		Minecraft.getInstance().setScreen(new GuiEditHUD(null));
 	}
+
+	@Override
+	public boolean canSeeDemonSoulNetwork(Level world, ItemStack stack, Player player) {return !isSimple;}
+
+	@Override
+	public int getSoulNetworkResolution(Level world, ItemStack stack, Player player) {return 100;}
 }

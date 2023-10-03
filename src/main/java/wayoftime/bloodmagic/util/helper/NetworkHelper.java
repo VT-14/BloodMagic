@@ -5,11 +5,16 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.server.ServerLifecycleHooks;
+import org.jetbrains.annotations.NotNull;
+import wayoftime.bloodmagic.api.compat.ISoulNetworkViewer;
+import wayoftime.bloodmagic.common.item.BloodMagicItems;
 import wayoftime.bloodmagic.common.item.BloodOrb;
 import wayoftime.bloodmagic.common.item.IBindable;
 import wayoftime.bloodmagic.common.item.IBloodOrb;
@@ -251,5 +256,18 @@ public class NetworkHelper
 		int currentNumberOfDungeons = dataHandler.getNumberOfDungeons();
 		dataHandler.setNumberOfDungeons(currentNumberOfDungeons + 1);
 		dataHandler.setDirty();
+	}
+
+	public static boolean canPlayerSeeSoulNetwork(Player player)
+	{
+		NonNullList<ItemStack> inventory = InventoryHelper.getActiveInventories(player);
+		for (ItemStack stack : inventory){
+			if ((stack.getItem() instanceof ISoulNetworkViewer) && ((ISoulNetworkViewer) stack.getItem()).canSeeDemonSoulNetwork(player.getCommandSenderWorld(), stack, player))
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

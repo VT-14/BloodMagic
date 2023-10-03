@@ -3,6 +3,7 @@ package wayoftime.bloodmagic.client.hud;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import org.apache.commons.lang3.tuple.Pair;
 
 import net.minecraft.client.resources.language.I18n;
@@ -13,6 +14,7 @@ import wayoftime.bloodmagic.client.Sprite;
 import wayoftime.bloodmagic.client.hud.element.ElementDemonAura;
 import wayoftime.bloodmagic.client.hud.element.ElementDivinedInformation;
 import wayoftime.bloodmagic.client.hud.element.ElementHolding;
+import wayoftime.bloodmagic.client.hud.element.ElementSoulNetwork;
 import wayoftime.bloodmagic.common.tile.TileAltar;
 import wayoftime.bloodmagic.common.tile.TileIncenseAltar;
 import wayoftime.bloodmagic.util.helper.NumeralHelper;
@@ -21,7 +23,10 @@ public class Elements
 {
 	public static void registerElements()
 	{
+		float screenHeight = (float) GlStateManager.Viewport.height();
+
 		ElementRegistry.registerHandler(new ResourceLocation(BloodMagic.MODID, "demon_will_aura"), new ElementDemonAura(), new Vec2(0.01f, 0.01f));
+		ElementRegistry.registerHandler(new ResourceLocation(BloodMagic.MODID, "soul_network"), new ElementSoulNetwork(), new Vec2(0.0f, 0.4f));
 
 		ElementRegistry.registerHandler(BloodMagic.rl("blood_altar"), new ElementDivinedInformation<TileAltar>(2, true, TileAltar.class)
 		{

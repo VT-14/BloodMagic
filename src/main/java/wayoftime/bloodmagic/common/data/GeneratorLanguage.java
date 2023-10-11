@@ -509,8 +509,8 @@ public class GeneratorLanguage extends LanguageProvider
 		add("guide.patchouli.bloodmagic.arc_processor.no_fluid", "None");
 		add("guide.patchouli.bloodmagic.living_armour_upgrade_table.level", "Level");
 		add("guide.patchouli.bloodmagic.living_armour_upgrade_table.upgrade_points", "Upgrade Points");
-		add("guide.patchouli.bloodmagic.ritual_info.activation_cost", "$(br)Activation Cost: $(blood)%d LP$()");
-		add("guide.patchouli.bloodmagic.ritual_info.upkeep_cost", "$(br)Base Usage Cost: $(blood)%d LP$()$(br)Base Interval: %d Ticks");
+		add("guide.patchouli.bloodmagic.ritual_info.activation_cost", "$(br)Activation Cost: $(blood)%,d LP$()");
+		add("guide.patchouli.bloodmagic.ritual_info.upkeep_cost", "$(br)Base Usage Cost: $(blood)%,d LP$()$(br)Base Interval: %,d Ticks");
 		add("guide.patchouli.bloodmagic.ritual_info.weak_activation_crystal_link", "$(l:bloodmagic:rituals/activation_crystals#weak)%s$(/l)");
 		add("guide.patchouli.bloodmagic.ritual_info.awakened_activation_crystal_link", "$(l:bloodmagic:rituals/activation_crystals#awakened)%s$(/l)");
 		add("guide.patchouli.bloodmagic.ritual_info.counter_formatter", "$(br)%s%s$()");

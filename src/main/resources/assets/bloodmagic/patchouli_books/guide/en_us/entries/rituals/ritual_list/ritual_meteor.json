@@ -11,7 +11,8 @@
     },
     {
       "type": "bloodmagic:ritual_info",
-      "ritual": "meteor"
+      "ritual": "meteor",
+      "text": "Meteors need $(blood)additional LP$()."
     },
     {
       "type": "patchouli:text",
